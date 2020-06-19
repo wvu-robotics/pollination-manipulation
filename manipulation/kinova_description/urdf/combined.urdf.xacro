@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+  <!-- include macros for husky and kinova -->
+  <xacro:include filename="$(find husky_description)/urdf/husky.urdf.xacro"/>
+  <xacro:include filename="$(find kinova_description)/urdf/j2n6s300.xacro" />
+  <xacro:macro name="husky_with_kinova" params="prefix">
+    <!-- instantiate husky-->
+    <xacro:husky prefix="husky_" />
+  </xacro:macro>
+  <!-- initialize kinova with connection to top of husky-->
+  <xacro:property name="robot_root" value="top_plate_link" />
+  <xacro:j2n6s300 base_parent="${robot_root}" prefix="" />
+</robot>

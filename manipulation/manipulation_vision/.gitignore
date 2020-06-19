@@ -1,0 +1,7 @@
+output/*.jpg
+output/*.png
+data/*.csv
+data/rgb.jpg
+data/rgb_contrained.jpg
+data/depth.jpg
+data/snapshots

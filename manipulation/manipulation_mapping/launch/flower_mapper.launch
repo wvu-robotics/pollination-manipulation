@@ -1,0 +1,39 @@
+<launch>
+  <param name="/use_sim_time" value="false"/>
+
+  <group ns="flower_mapper">
+    <node pkg="manipulation_mapping"
+          name="flower_mapper"
+          type="flower_mapper_node"
+          output="screen">
+
+      <!-- Initial pose -->
+      <rosparam param="init">
+      </rosparam>
+
+      <!-- Rates -->
+      <rosparam file="$(find manipulation_mapping)/config/parameters.yaml"/>
+
+    </node>
+  </group>
+
+
+  <node pkg="manipulation_vision"
+        name="segmentation_node"
+        type="segmentation_node"
+        output="screen">
+  </node>
+
+  <node pkg="manipulation_vision"
+        name="classification_node"
+        type="classification_node"
+        output="screen">
+  </node>
+
+  <node pkg="manipulation_vision"
+        name="search_node"
+        type="search_node"
+        output="screen">
+  </node>
+  
+</launch>

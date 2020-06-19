@@ -1,0 +1,10 @@
+# Build Map Action
+
+# goal - number of sample points to downsample point cloud
+int32 n_points
+---
+# result
+bool mapping_completed
+---
+# feedback
+bool current_camera_pose

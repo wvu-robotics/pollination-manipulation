@@ -1,0 +1,10 @@
+# End Effector (EE) Go To Pose action
+
+#goal definition
+geometry_msgs/Pose goal_pose
+---
+#result definition
+bool goal_reached
+---
+#feedback
+bool current_camera_pose

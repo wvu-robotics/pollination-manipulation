@@ -1,0 +1,7 @@
+<launch>
+
+  <node name="plan_flower_seq_action_node" pkg="manipulation_planning" type="plan_flower_seq_action_node" output="screen" >
+    <rosparam command="load" file="$(find manipulation_mapping)/launch/launch_params/first_search_pose.yaml" />
+  </node>
+
+</launch>

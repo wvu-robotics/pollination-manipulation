@@ -1,0 +1,6 @@
+bool start_planning
+---
+int16[] poses_order
+---
+bool planner_status
+

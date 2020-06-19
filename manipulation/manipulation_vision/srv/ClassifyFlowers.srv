@@ -1,0 +1,4 @@
+uint32 numberOfSegments
+---
+float32[] responseProbabilities
+bool success

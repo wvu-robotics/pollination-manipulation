@@ -1,0 +1,3 @@
+geometry_msgs/Pose ee_previsit_pose
+---
+geometry_msgs/Pose[] ee_poses

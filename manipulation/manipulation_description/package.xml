@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>manipulation_description</name>
+  <version>0.0.0</version>
+  <description>The manipulation_description package</description>
+
+  <maintainer email="irlwvu@gmail.com">WVU Interactive Robotics Laboratory</maintainer>
+
+  <author>Jenn Nguyen/jqnguyen@mix.wvu.edu</author>
+
+  <license>BSD</license>
+
+  <url>https://github.com/wvu-irl/pollination-manipulation</url>
+  <url>https://web.statler.wvu.edu/~irl/</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roscpp</build_depend>
+  <build_export_depend>roscpp</build_export_depend>
+  <exec_depend>roscpp</exec_depend>
+
+</package>

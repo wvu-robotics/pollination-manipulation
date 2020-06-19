@@ -1,0 +1,4 @@
+uint32 flowerIndex
+---
+float32[] responseProbabilities
+bool success

@@ -1,0 +1,10 @@
+# Plan Flower Sequence Action
+
+# goal definition
+int16[] flower_ids
+---
+# result definition
+int16[] sequence
+geometry_msgs/Pose[] ee_previsit_poses
+---
+# feedback

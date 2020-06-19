@@ -1,0 +1,9 @@
+# segment
+float32[] u
+float32[] v
+uint8[] r
+uint8[] g
+uint8[] b
+uint32 numberOfPoints
+uint32 width
+uint32 height

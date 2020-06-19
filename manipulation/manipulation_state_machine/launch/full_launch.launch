@@ -1,0 +1,41 @@
+<launch>
+
+  <include file="$(find kinova_bringup)/launch/kinova_robot.launch">
+    <arg name="kinova_robotType" value="j2n6s300"/>
+    <arg name="use_urdf" value="true"/>
+  </include>
+
+  <include file="$(find j2n6s300_moveit_config)/launch/bramblebee_arm.launch">
+  </include>
+
+  <include file="$(find j2n6s300_moveit_config)/launch/bramblebee_realsense_camera.launch">
+  </include>
+
+  <include file="$(find manipulation_mapping)/launch/flower_mapper.launch">
+  </include>
+
+  <!--<include file="$(find manipulation_mapping)/launch/build_map_action.launch">
+  </include>-->
+
+  <include file="$(find manipulation_vision)/launch/approach_flower_action_node.launch">
+  </include>
+
+  <!--<node pkg="manipulation_state_machine" name="pre_pose_mapping_ros" type="pre_pose_mapping_ros" output="screen">
+  </node> -->
+
+  <!--<include file="$(find manipulation_planning)/launch/plan_flower_sequence.launch">
+  </include>-->
+  <!--<node pkg="manipulation_state_machine" name="planning_ga_ros" type="planning_ga_ros" output="screen">
+</node>-->
+
+  <node pkg="manipulation_pollinator" name="pollinator_control_node" type="pollinator_control_node" output="screen">
+  </node>
+
+
+  <node pkg="manipulation_state_machine" name="final_previsit_pose_node" type="final_previsit_pose_node" output="screen">
+  </node>
+
+  <node pkg="manipulation_state_machine" name="find_previsit_poses_node" type="find_previsit_poses_node" output="screen">
+  </node>
+
+</launch>

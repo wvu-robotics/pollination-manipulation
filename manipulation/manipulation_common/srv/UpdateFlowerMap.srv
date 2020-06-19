@@ -1,0 +1,6 @@
+geometry_msgs/PoseStamped[] poses
+sensor_msgs/PointCloud2[] point_clouds
+bool clear_map
+---
+uint8 status
+manipulation_common/Flower[] map

@@ -1,0 +1,13 @@
+<launch>
+  <!-- end effector pollinator (eep) offsets in meters (i.e. pollinator offset from end effector) -->
+  <arg name="eep_x_offset" default="0.035" />
+  <arg name="eep_y_offset" default="0.067" />
+  <!-- <arg name="eep_z_offset" default="0.114" /> -->
+  <arg name="eep_z_offset" default="0.098" />
+
+  <node name="approach_flower_action_node" pkg="manipulation_vision" type="approach_flower_action_node" output="screen">
+    <param name="eep_x_offset" value="$(arg eep_x_offset)" />
+    <param name="eep_y_offset" value="$(arg eep_y_offset)" />
+    <param name="eep_z_offset" value="$(arg eep_z_offset)" />
+  </node>
+</launch>

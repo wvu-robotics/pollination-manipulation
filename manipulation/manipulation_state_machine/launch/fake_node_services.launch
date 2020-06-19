@@ -1,0 +1,22 @@
+<launch>
+
+ <node pkg="manipulation_state_machine" name="fake_pplanning_service" type="fake_pplanning_service.py" output="screen">
+ </node>
+ <node pkg="manipulation_state_machine" name="fake_visual_servoing_service" type="fake_visual_servoing_service.py" output="screen">
+
+ </node>
+ <node pkg="manipulation_state_machine" name="fake_pollination_service" type="fake_pollination_service.py" output="screen">
+ </node>
+
+ <node pkg="manipulation_state_machine" name="fake_mapping_action_server" type="fake_mapping_action_server.py" output="screen">
+ </node>
+
+ <node pkg="manipulation_state_machine" name="fake_control_action_server" type="fake_control_action_server.py" output="screen">
+ </node>
+ <node pkg="manipulation_state_machine" name="fake_search_for_flowers_service" type="fake_search_for_flowers_service.py" output="screen">
+ </node>
+
+
+
+
+</launch>

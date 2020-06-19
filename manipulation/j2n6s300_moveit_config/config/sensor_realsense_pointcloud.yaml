@@ -1,0 +1,5 @@
+sensors:
+  - sensor_plugin: occupancy_map_monitor/PointCloudOctomapUpdater
+    point_cloud_topic: /bramblebee/arm/filtered_pointcloud
+    max_range: 2.0
+    max_update_rate: 1.0

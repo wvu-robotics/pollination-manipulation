@@ -1,0 +1,10 @@
+# Approach Flower Action
+
+# goal definition
+int16 flower_id
+---
+# result definition
+bool flower_approached
+---
+# feedback definition
+manipulation_control/EECameraPose current_camera_pose

@@ -1,0 +1,9 @@
+string filepath
+---
+manipulation_vision/Segment[] segments
+float32[] u
+float32[] v
+uint32[] width
+uint32[] height
+uint32 numberOfSegments
+bool success
