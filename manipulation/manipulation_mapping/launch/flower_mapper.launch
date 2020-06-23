@@ -33,7 +33,8 @@
   <node pkg="manipulation_vision"
         name="search_node"
         type="search_node"
-        output="screen">
+        output="screen"
+        launch-prefix="xterm -e gdb --args">
   </node>
   
 </launch>

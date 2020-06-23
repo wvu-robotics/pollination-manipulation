@@ -96,9 +96,10 @@ bool Search::search(manipulation_common::SearchForFlowers::Request  &req,
   cv_bridge::toCvCopy(msg_depth_ptr, "16UC1");
 
   //load depth info
+  //TODO: i broke this on purpose -nwh
   sensor_msgs::CameraInfo::ConstPtr msg_depth_info_ptr =
   ros::topic::waitForMessage<sensor_msgs::CameraInfo>
-  ("/camera/aligned_depth_to_color/camera_info", ros::Duration(1));
+  ("/camera/color/camera_info", ros::Duration(1));
 
   if(msg_depth_info_ptr == NULL)
   {
@@ -489,7 +490,9 @@ bool Search::_load_depth(std::string topic)
   cv::imwrite(filepath + "/depth.jpg",  _depth);
 
   //info topic
-  std::string topic_info = topic + "/camera_info";
+  //TODO: i broke this on purpose -nwh
+  //std::string topic_info = topic + "/camera_info";
+  std::string topic_info = "/camera/color/camera_info";
 
   //load info
   sensor_msgs::CameraInfo::ConstPtr msg_depth_info_ptr =
@@ -700,8 +703,10 @@ bool Search::republish()
 
   sensor_msgs::Image::ConstPtr msg_depth_ptr = ros::topic::waitForMessage<sensor_msgs::Image>("/camera/aligned_depth_to_color/image_raw", ros::Duration(1));
   sensor_msgs::Image::ConstPtr msg_color_ptr = ros::topic::waitForMessage<sensor_msgs::Image>("/camera/color/image_raw", ros::Duration(1));
-  sensor_msgs::CameraInfo::ConstPtr msg_depth_info_ptr = ros::topic::waitForMessage<sensor_msgs::CameraInfo>("/camera/aligned_depth_to_color/camera_info", ros::Duration(1));
+  //TODO: i broke this on purpose -nwh
+  //sensor_msgs::CameraInfo::ConstPtr msg_depth_info_ptr = ros::topic::waitForMessage<sensor_msgs::CameraInfo>("/camera/aligned_depth_to_color/camera_info", ros::Duration(1));
   sensor_msgs::CameraInfo::ConstPtr msg_color_info_ptr = ros::topic::waitForMessage<sensor_msgs::CameraInfo>("/camera/color/camera_info", ros::Duration(1));
+  sensor_msgs::CameraInfo::ConstPtr msg_depth_info_ptr = msg_color_info_ptr;
   pcl::PCLPointCloud2::ConstPtr msg_cloud_ptr = ros::topic::waitForMessage<pcl::PCLPointCloud2> ("/camera/depth/color/points", ros::Duration(1));
   tf2_msgs::TFMessage::ConstPtr msg_tf = ros::topic::waitForMessage<tf2_msgs::TFMessage> ("/tf", ros::Duration(1));
   tf2_msgs::TFMessage::ConstPtr msg_tf_static = ros::topic::waitForMessage<tf2_msgs::TFMessage> ("/tf_static", ros::Duration(1));
