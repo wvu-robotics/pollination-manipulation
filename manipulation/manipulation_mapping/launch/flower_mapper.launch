@@ -5,7 +5,8 @@
     <node pkg="manipulation_mapping"
           name="flower_mapper"
           type="flower_mapper_node"
-          output="screen">
+          output="screen"
+          launch-prefix="xterm -e gdb --args">
 
       <!-- Initial pose -->
       <rosparam param="init">
@@ -27,7 +28,8 @@
   <node pkg="manipulation_vision"
         name="classification_node"
         type="classification_node"
-        output="screen">
+        output="screen"
+        launch-prefix="xterm -e gdb --args">
   </node>
 
   <node pkg="manipulation_vision"

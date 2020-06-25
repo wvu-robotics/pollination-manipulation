@@ -36,13 +36,14 @@ bool Classification::classifyImage(manipulation_vision::ClassifyFlowers::Request
       return -1;
   }
   PyRun_SimpleString("import sys");
-  PyRun_SimpleString("sys.path.append('/home/bramblebee/manipulation_ws/src/manipulation/manipulation_vision/src/')");
+  //PyRun_SimpleString("sys.path.append('/home/bramblebee/manipulation_ws/src/manipulation/manipulation_vision/src/')");
+  PyRun_SimpleString("sys.path.append('/home/nhewitt/git/pollination_ws/src/manipulation/manipulation_vision/src/')");
   PyObject* pMod = NULL;
   PyObject* pFunc = NULL;
   PyObject* pParm = NULL;
   PyObject* pRetVal = NULL;
   char* iRetVal;
-  const char* modulName="classify";    //这个是被调用的py文件模块名字
+  const char* modulName="classify";    //this is the name of the called py file module
   pMod = PyImport_ImportModule(modulName);
   if(!pMod)
   {
@@ -50,7 +51,7 @@ bool Classification::classifyImage(manipulation_vision::ClassifyFlowers::Request
       PyErr_Print();
       return -1;
   }
-  const char* funcName="evaluate_multipleString";  //这是此py文件模块中被调用的函数名字
+  const char* funcName="evaluate_multipleString";  //this is the name of the function called in this py file module
   //const char* funcName="evaluate_singleString";
   pFunc = PyObject_GetAttrString(pMod, funcName);
   if(!pFunc)
@@ -59,9 +60,9 @@ bool Classification::classifyImage(manipulation_vision::ClassifyFlowers::Request
       return -2;
   }
   pParm = PyTuple_New(1);
-  PyTuple_SetItem(pParm, 0, Py_BuildValue("s",picpath));//传入的参数，是图片的路径
-  pRetVal = PyEval_CallObject(pFunc, pParm);//这里开始执行py脚本
-  PyArg_Parse(pRetVal, "s", &iRetVal);//py脚本返回值给iRetVal
+  PyTuple_SetItem(pParm, 0, Py_BuildValue("s",picpath));//the incoming parameter is the path of the picture
+  pRetVal = PyEval_CallObject(pFunc, pParm);//execute the py script here
+  PyArg_Parse(pRetVal, "s", &iRetVal);//py script returns value to iRetVal
   std::cout<< "image classification result:\n"; // 0 refers to flower, 1 refers to non-flower
   std::cout<< iRetVal << "\n";
 

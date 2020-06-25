@@ -648,7 +648,7 @@ bool Search::depth_constraint( cv::Mat & rgb,
     {
       //compute depth
       float z = depth.at<short int>( cv::Point(u,v) ) / 1000.0;
-      if(z > criteria || z < 0.1) //depth constraint
+      if(false) //depth constraint
       {
         rgb.at<cv::Vec3b>(cv::Point(u,v)) = cv::Vec3b(50,100,50);
       }
