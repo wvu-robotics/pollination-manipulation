@@ -295,7 +295,7 @@ bool Segmentation::_extractContours()
 
     //get contours and draw contours
     std::vector<std::vector<cv::Point> > contour_points;
-    findContours(_binary_image, contour_points, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
+    findContours(_binary_image, contour_points, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
     //extract bounding box for each contour
     _contour_list.clear();
@@ -324,7 +324,7 @@ bool Segmentation::_extractContoursFF()
 
     //get contours and draw contours
     std::vector<std::vector<cv::Point> > contour_points;
-    findContours(_binary_image, contour_points, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
+    findContours(_binary_image, contour_points, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
     //extract bounding box for each contour
     _contour_list.clear();
