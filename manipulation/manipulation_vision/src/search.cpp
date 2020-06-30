@@ -339,7 +339,11 @@ bool Search::searchFF(manipulation_common::SearchForFlowers::Request  &req,
 {
   //republish data
   ROS_INFO("Republish image/depth data...");
-  republish();
+  if(!republish())
+  {
+    ROS_ERROR("Republish failed! Are all camera topics publishing?");
+    return false;
+  }
 
   //get package directory
   ROS_INFO("Searching (using FF)...");
@@ -370,8 +374,8 @@ bool Search::searchFF(manipulation_common::SearchForFlowers::Request  &req,
       continue;
 
     //check if size of flower is reasonable
-    if(!_size_constraint_satisfied(segment.width, segment.height))
-      continue;
+    //if(!_size_constraint_satisfied(segment.width, segment.height))
+    //  continue;
 
     //display probability of ith detected flower
     ROS_INFO("searchFF: (i, prob) = %i, %f", i, classifyFlowersSrv.response.responseProbabilities[i]);
@@ -711,6 +715,16 @@ bool Search::republish()
   tf2_msgs::TFMessage::ConstPtr msg_tf = ros::topic::waitForMessage<tf2_msgs::TFMessage> ("/tf", ros::Duration(1));
   tf2_msgs::TFMessage::ConstPtr msg_tf_static = ros::topic::waitForMessage<tf2_msgs::TFMessage> ("/tf_static", ros::Duration(1));
 
+  // Check for null ptrs so node doesn't die if one topic is missing
+  if(msg_depth_ptr == NULL ||
+     msg_color_ptr == NULL ||
+     msg_depth_info_ptr == NULL ||
+     msg_color_info_ptr == NULL)
+  {
+    return false;
+  }
+
+
   pub_depth_img.publish(msg_depth_ptr);
   pub_color_img.publish(msg_color_ptr);
   pub_depth_info.publish(msg_depth_info_ptr);
@@ -718,6 +732,8 @@ bool Search::republish()
   pub_cloud.publish(msg_cloud_ptr);
   pub_tf.publish(msg_tf);
   pub_tf_static.publish(msg_tf_static);
+
+  return true;
 }
 
 //----------------------------------------------------------------------------

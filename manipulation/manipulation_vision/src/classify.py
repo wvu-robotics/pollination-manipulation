@@ -33,8 +33,7 @@ def evaluate_multipleString(pic):
 	picPaths = pic.split(';')
 	res = ''
 	tf.reset_default_graph()
-    # with tf.gfile.FastGFile(rospack.get_path('manipulation_vision')+"/src/tf_files/retrained_graph.pb", 'rb') as f:
-	with tf.gfile.FastGFile("/home/nhewitt/git/pollination_ws/src/manipulation/manipulation_vision/src/tf_files/retrained_graph.pb", 'rb') as f:
+        with tf.gfile.FastGFile(rospack.get_path('manipulation_vision')+"/src/tf_files/retrained_graph.pb", 'rb') as f:
 	    graph_def = tf.GraphDef()	## The graph-graph_def is a saved copy of a TensorFlow graph; objektinitialisierung
 	    graph_def.ParseFromString(f.read())	#Parse serialized protocol buffer data into variable
 	    _ = tf.import_graph_def(graph_def, name='')	# import a serialized TensorFlow GraphDef protocol buffer, extract objects in the GraphDef as tf.Tensor

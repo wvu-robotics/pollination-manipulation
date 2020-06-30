@@ -21,23 +21,27 @@ Classification::Classification()
 bool Classification::classifyImage(manipulation_vision::ClassifyFlowers::Request  &req,
                                    manipulation_vision::ClassifyFlowers::Response &res)
 {
-  std::string path;
-  // std::string package_path;
-  // std::string contour_path;
+  // Paths for image output and executable location
+  std::string outputPath;
+  std::string execPath;
+
+  // Set command to add executable location to python path
+  execPath = ros::package::getPath("manipulation_vision") + "/src/";
+  std::string execCommand = "sys.path.append('" + execPath + "')";
+  const char* pyExecCommand = execCommand.c_str();
+  
   for(int i=0; i<req.numberOfSegments; i++)
   {
-    path += ros::package::getPath("manipulation_vision") + "/output/contour" + std::to_string(i) + ".png;";
-    // contour_path += ros::package::getPath("vision_arm") + "/output/contour" + std::to_string(i) + ".png;";
+    outputPath += ros::package::getPath("manipulation_vision") + "/output/contour" + std::to_string(i) + ".png;";
   }
 
-  const char* picpath = path.c_str();
+  const char* picpath = outputPath.c_str();
   Py_Initialize();
   if ( !Py_IsInitialized() ) {
       return -1;
   }
   PyRun_SimpleString("import sys");
-  //PyRun_SimpleString("sys.path.append('/home/bramblebee/manipulation_ws/src/manipulation/manipulation_vision/src/')");
-  PyRun_SimpleString("sys.path.append('/home/nhewitt/git/pollination_ws/src/manipulation/manipulation_vision/src/')");
+  PyRun_SimpleString(pyExecCommand);
   PyObject* pMod = NULL;
   PyObject* pFunc = NULL;
   PyObject* pParm = NULL;
@@ -102,13 +106,12 @@ bool Classification::classifyPose(manipulation_vision::ClassifyPose::Request  &r
 {
 
   std::string filepath = ros::package::getPath("manipulation_vision") + "/output/contour" + std::to_string(req.flowerIndex) + ".png;";
-  //std::cout << "filepath = " << filepath << std::endl;
 
-  /*std::string path;
-  for(int i=0; i<req.flowerIndex; i++)
-  {
-    path += ros::package::getPath("manipulation_vision") + "/output/contour" + std::to_string(i) + ".png;";
-  }*/
+
+  // Set command to add executable location to python path
+  std::string execPath = ros::package::getPath("manipulation_vision") + "/src/";
+  std::string execCommand = "sys.path.append('" + execPath + "')";
+  const char* pyExecCommand = execCommand.c_str();
 
   const char* picpathPose = filepath.c_str();
   Py_Initialize();
@@ -116,7 +119,7 @@ bool Classification::classifyPose(manipulation_vision::ClassifyPose::Request  &r
       return -1;
   }
   PyRun_SimpleString("import sys");
-  PyRun_SimpleString("sys.path.append('/home/bramblebee/manipulation_ws/src/manipulation/manipulation_vision/src/')");
+  PyRun_SimpleString(pyExecCommand);
   PyObject* pModPose = NULL;
   PyObject* pFuncPose = NULL;
   PyObject* pParmPose = NULL;
