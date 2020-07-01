@@ -423,7 +423,7 @@ bool Search::searchFF(manipulation_common::SearchForFlowers::Request  &req,
 
 //----------------------------------------------------------------------------
 /**
- * 
+ *       
  */
 bool Search::_load_rgb(std::string topic)
 {
@@ -471,7 +471,7 @@ bool Search::_load_rgb(std::string topic)
 bool Search::_load_depth(std::string topic)
 {
   //image topic
-  std::string topic_image = topic + "/image_raw";
+  std::string topic_image = topic+ "/image_raw"; 
 
   //wait for message
   sensor_msgs::Image::ConstPtr msg_depth_ptr =
@@ -651,9 +651,12 @@ bool Search::depth_constraint( cv::Mat & rgb,
     for(int u=0; u < rgb.cols; u++)
     {
       //compute depth
-      float z = depth.at<short int>( cv::Point(u,v) ) / 1000.0;
-      if(false) //depth constraint
+      float z = depth.at<short int>( cv::Point(u,v) ) / 10.0;  //1000
+      if(z > criteria || z < 0.1) //depth constraint  was z > criteria || z < 0.1
       {
+	if (z < 0.1){
+		std::cout<<"too close   "<< z <<"\n";	
+	}
         rgb.at<cv::Vec3b>(cv::Point(u,v)) = cv::Vec3b(50,100,50);
       }
     }
