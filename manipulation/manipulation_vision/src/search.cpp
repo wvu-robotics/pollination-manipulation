@@ -453,7 +453,7 @@ bool Search::_load_rgb(std::string topic)
 
   //load info
   sensor_msgs::CameraInfo::ConstPtr msg_rgb_info_ptr =
-  ros::topic::waitForMessage<sensor_msgs::CameraInfo>(topic_info, ros::Duration(1));
+  ros::topic::waitForMessage<sensor_msgs::CameraInfo>(topic_info, ros::Duration(5)); //1
 
   if(msg_rgb_info_ptr == NULL)
   {
@@ -494,13 +494,13 @@ bool Search::_load_depth(std::string topic)
   cv::imwrite(filepath + "/depth.jpg",  _depth);
 
   //info topic
-  //TODO: i broke this on purpose -nwh
-  //std::string topic_info = topic + "/camera_info";
-  std::string topic_info = "/camera/color/camera_info";
+  //TODO: i broke this on purpose -nwh  -I put it back -Trevor
+  std::string topic_info = topic + "/camera_info";
+  //std::string topic_info = "/camera/color/camera_info";
 
   //load info
   sensor_msgs::CameraInfo::ConstPtr msg_depth_info_ptr =
-  ros::topic::waitForMessage<sensor_msgs::CameraInfo>(topic_info, ros::Duration(1));
+  ros::topic::waitForMessage<sensor_msgs::CameraInfo>(topic_info, ros::Duration(5)); //1
 
   if(msg_depth_info_ptr == NULL)
   {
