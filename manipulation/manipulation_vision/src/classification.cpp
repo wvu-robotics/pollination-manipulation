@@ -91,7 +91,7 @@ bool Classification::classifyImage(manipulation_vision::ClassifyFlowers::Request
       end = s.find(delim, start);
   }
   //std::cout << s.substr(start, end);
-
+	std::cout<< "classification ended \n";
   res.success = true;
 
   return true;
@@ -168,7 +168,7 @@ bool Classification::classifyPose(manipulation_vision::ClassifyPose::Request  &r
       end = s.find(delim, start);
   }
   //std::cout << s.substr(start, end);
-
+std::cout<< "classification pose ended \n";
   res.success = true;
 
   return true;

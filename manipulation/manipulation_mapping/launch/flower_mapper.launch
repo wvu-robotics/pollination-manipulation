@@ -22,7 +22,8 @@
   <node pkg="manipulation_vision"
         name="segmentation_node"
         type="segmentation_node"
-        output="screen">
+        output="screen"
+	launch-prefix="xterm -e gdb --args">
   </node>
 
   <node pkg="manipulation_vision"

@@ -152,6 +152,7 @@ bool Search::search(manipulation_common::SearchForFlowers::Request  &req,
     ROS_ERROR("Error! Failed to call service SegmentFlowers");
   }
 
+  ROS_INFO("made it out of Segment Flowers ");
   //do classification
   classifyFlowersSrv.request.numberOfSegments =
   segmentFlowersSrv.response.numberOfSegments;
@@ -170,13 +171,19 @@ bool Search::search(manipulation_common::SearchForFlowers::Request  &req,
   {
     ROS_ERROR("Error! Failed to call service ClassifyFlowers");
   }
-
+ ROS_INFO("made it out of Classification  ");
   //compute position of each flower
   std::vector<geometry_msgs::PoseStamped> obs; obs.clear();
+	
+  if(classifyFlowersSrv.response.responseProbabilities.size() == 0){
+	ROS_INFO("ITS EMPTY!!!!");	
+  }  
+
   for(int i=0; i<classifyFlowersSrv.response.responseProbabilities.size(); i++)
   {
     if(classifyFlowersSrv.response.responseProbabilities[i] > 0.7)
     {
+	 ROS_INFO("made it into computing the position");
       //check if size of flower is reasonable
       //TODO: use meters instead of using pixels
       int w = segmentFlowersSrv.response.width[i];
@@ -279,6 +286,9 @@ bool Search::search(manipulation_common::SearchForFlowers::Request  &req,
       {
         obs.push_back(pose_new);
       }
+      else{
+        ROS_INFO("NOT IN RANGE!!");	
+	}
     }
   }
 
@@ -304,7 +314,8 @@ bool Search::search(manipulation_common::SearchForFlowers::Request  &req,
   {
     ROS_ERROR("Error! Failed to call service UpdateFlowerMap");
   }
-
+	
+std::cout<<"made it to the end of search cpp---------------------";
   //update response
   res.success = true;
 
@@ -358,8 +369,9 @@ bool Search::searchFF(manipulation_common::SearchForFlowers::Request  &req,
 
   //do segmentation
   _do_segmentation();
+	std::cout<<"did segmentation \n";
   _do_classification();
-
+	std::cout<<"did classification \n";
   //compute point cloud for each segment
   std::vector<sensor_msgs::PointCloud2> point_clouds;
   std::vector<geometry_msgs::PoseStamped> poses;
@@ -393,6 +405,7 @@ bool Search::searchFF(manipulation_common::SearchForFlowers::Request  &req,
     //add pose and points to list
     point_clouds.push_back(point_cloud);
     poses.push_back(pose);
+	std::cout<<"pushed it back to the point cloud!!!!! \n";
   }
 
   //publish point cloud of all segments for visualization
@@ -416,8 +429,12 @@ bool Search::searchFF(manipulation_common::SearchForFlowers::Request  &req,
   {
     ROS_ERROR("Error! Failed to call service UpdateFlowerMap");
   }
+  std::cout<<"made it to the end of searchFF---------------------";
+  //update response
+  res.success = true;
 
   return true;
+
 }
 
 
@@ -494,9 +511,8 @@ bool Search::_load_depth(std::string topic)
   cv::imwrite(filepath + "/depth.jpg",  _depth);
 
   //info topic
-  //TODO: i broke this on purpose -nwh  -I put it back -Trevor
   std::string topic_info = topic + "/camera_info";
-  //std::string topic_info = "/camera/color/camera_info";
+  
 
   //load info
   sensor_msgs::CameraInfo::ConstPtr msg_depth_info_ptr =
@@ -525,7 +541,7 @@ sensor_msgs::PointCloud2 Search::_compute_point_cloud (manipulation_vision::Segm
 
     //xyzrgb
     pcl::PointXYZRGB point;
-    point.z = _depth.at<short int>( cv::Point(u,v) ) / 1000.0;
+    point.z = _depth.at<short int>( cv::Point(u,v) ) / 1.6; //1000 trevor 10
     point.x = (u - _depth_info.K[2]) * point.z / _depth_info.K[0];
     point.y = (v - _depth_info.K[5]) * point.z / _depth_info.K[4];
     point.r = segment.r[j];
@@ -576,6 +592,7 @@ geometry_msgs::PoseStamped Search::_compute_pose(sensor_msgs::PointCloud2 ros_pc
   pose.pose.position.x = mu_x/(double)pcl_pc.size();
   pose.pose.position.y = mu_y/(double)pcl_pc.size();
   pose.pose.position.z = mu_z/(double)pcl_pc.size();
+	std::cout<<"POSE  " << pose.pose.position.x<<"  "<< pose.pose.position.y<< "  "<<  pose.pose.position.z<<"\n";
 
   return pose;
 }
@@ -650,8 +667,9 @@ bool Search::depth_constraint( cv::Mat & rgb,
   {
     for(int u=0; u < rgb.cols; u++)
     {
+	//std::cout<<"before unit change"<< depth.at<short int>( cv::Point(u,v) )<<"\n";
       //compute depth
-      float z = depth.at<short int>( cv::Point(u,v) ) / 10.0;  //1000
+      float z = depth.at<short int>( cv::Point(u,v) ) / 1.6;  //1000 best = 10
       if(z > criteria || z < 0.1) //depth constraint  was z > criteria || z < 0.1
       {
 	if (z < 0.1){
@@ -678,6 +696,7 @@ bool Search::_size_constraint_satisfied ( int width,
 {
   if(width > 150 || height > 150 || width < 15 || height < 15) //manually parameterized
   {
+	std::cout<<"FLOWER IS NOT THE RIGHT SIZE \n";
     return false;
   }
   return true;

@@ -85,6 +85,7 @@ bool Segmentation::loadLookupTableRGB()
 bool Segmentation::segmentImage(manipulation_vision::SegmentFlowers::Request  &req,
                                 manipulation_vision::SegmentFlowers::Response &res)
 {
+	ROS_INFO("Running segmentImage  REGULAR");
     //temporary load and segment image then save results
     // std::string filepath = ros::package::getPath("manipulation_vision") + "/data/example.jpg";
     std::string filepath = ros::package::getPath("manipulation_vision") + "/data/rgb_constrained.jpg";
@@ -105,6 +106,7 @@ bool Segmentation::segmentImage(manipulation_vision::SegmentFlowers::Request  &r
     //copy points inside each contour (using flood fill algorithm)
     std::vector<int> U;
     std::vector<int> V;
+    std::cout<<"contour list size!! ==   " << _contour_list.size() << "\n";
     for(int i=0; i< _contour_list.size(); i++)
     {
       //for each contour
@@ -124,7 +126,7 @@ bool Segmentation::segmentImage(manipulation_vision::SegmentFlowers::Request  &r
     }
     res.numberOfSegments = _contour_list.size();
     res.success = true;
-
+	std::cout<<"segment image regular ended \n";
     return true;
 }
 
@@ -165,6 +167,7 @@ bool Segmentation::segmentImageFF(manipulation_vision::SegmentFlowersFF::Request
     res.v.clear();
     res.width.clear();
     res.height.clear();
+   std::cout<<"contour list size!! FF ==   " << _contour_list.size() << "\n";
     for(int i=0; i< _contour_list.size(); i++)
     {
         res.segments.push_back(_segment_list[i]);
@@ -175,7 +178,7 @@ bool Segmentation::segmentImageFF(manipulation_vision::SegmentFlowersFF::Request
     }
     res.numberOfSegments = _contour_list.size();
     res.success = true;
-
+	std::cout<<"segment image FF ended \n";
     return true;
 }
 
@@ -373,27 +376,27 @@ bool Segmentation::_extractContoursFF()
     }
 
     //display number of points for each contour
-    // for(int i = 0; i < _segment_list.size(); i++)
-    // {
-    //   std::cout << "i, n = " << i << ", "
-    //                          << _segment_list[i].numberOfPoints << std::endl;
-    // }
+     for(int i = 0; i < _segment_list.size(); i++)
+     {
+       std::cout << "i, n = " << i << ", "
+                              << _segment_list[i].numberOfPoints << std::endl;
+     }
 
     //display (u,v) coordinate of each point on each contour
-    // for(int i = 0; i < contour_points.size(); i++)
-    // {
-    //     if(i==1)
-    //     {
-    //       break;
-    //     }
-    //     for(int j = 0; j < contour_points[i].size(); j++)
-    //     {
-    //       std::cout << "i,j,u,v = " << i << ", "
-    //                                 << j << ", "
-    //                                 << contour_points[i][j].x << ", "
-    //                                 << contour_points[i][j].y << std::endl;
-    //     }
-    // }
+     for(int i = 0; i < contour_points.size(); i++)
+     {
+         if(i==1)
+         {
+           break;
+         }
+         for(int j = 0; j < contour_points[i].size(); j++)
+         {
+           std::cout << "i,j,u,v = " << i << ", "
+                                     << j << ", "
+                                     << contour_points[i][j].x << ", "
+                                     << contour_points[i][j].y << std::endl;
+         }
+     }
 
     return true;
 }
