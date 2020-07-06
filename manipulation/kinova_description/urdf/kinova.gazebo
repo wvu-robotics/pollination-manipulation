@@ -33,7 +33,7 @@
         <plugin name="depth_camera_plugin" filename="libgazebo_ros_openni_kinect.so">
           <baseline>0.2</baseline>
           <alwaysOn>true</alwaysOn>
-          <updateRate>1.0</updateRate>
+          <updateRate>0.0</updateRate>
           <cameraName>camera</cameraName>
           <imageTopicName>/camera/color/image_raw</imageTopicName>
           <cameraInfoTopicName>/camera/color/camera_info</cameraInfoTopicName>

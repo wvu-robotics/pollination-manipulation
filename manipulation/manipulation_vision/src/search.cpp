@@ -93,13 +93,12 @@ bool Search::search(manipulation_common::SearchForFlowers::Request  &req,
   //convert depth data type
   //TODO: need to check the encoding type, often it is 16UC1
   cv_bridge::CvImagePtr cv_depth_ptr =
-  cv_bridge::toCvCopy(msg_depth_ptr, "16UC1");
+  cv_bridge::toCvCopy(msg_depth_ptr, "32FC1");
 
   //load depth info
-  //TODO: i broke this on purpose -nwh
   sensor_msgs::CameraInfo::ConstPtr msg_depth_info_ptr =
   ros::topic::waitForMessage<sensor_msgs::CameraInfo>
-  ("/camera/color/camera_info", ros::Duration(1));
+  ("/camera/aligned_depth_to_color/camera_info", ros::Duration(1));
 
   if(msg_depth_info_ptr == NULL)
   {
@@ -503,7 +502,7 @@ bool Search::_load_depth(std::string topic)
   //convert to opencv type (for depth image)
   //TODO: check the encoding type, often 16UC1 (so using this for now)
   cv_bridge::CvImagePtr cv_depth_ptr =
-  cv_bridge::toCvCopy(msg_depth_ptr, "16UC1");
+  cv_bridge::toCvCopy(msg_depth_ptr, "32FC1");
   _depth = cv_depth_ptr->image.clone();
 
   //write depth to file (although the encoding is messed up for .jpg)
@@ -663,18 +662,20 @@ bool Search::depth_constraint( cv::Mat & rgb,
 
   //filter rgb
   //TODO: change to pointers for efficiency
+  char temp;
   for(int v=0; v < rgb.rows; v++)
   {
     for(int u=0; u < rgb.cols; u++)
     {
 	//std::cout<<"before unit change"<< depth.at<short int>( cv::Point(u,v) )<<"\n";
       //compute depth
-      float z = depth.at<short int>( cv::Point(u,v) ) / 1.6;  //1000 best = 10
-      if(z > criteria || z < 0.1) //depth constraint  was z > criteria || z < 0.1
+      float z = depth.at<float>( cv::Point(u,v) );  //adjust for units
+      if(isnan(z) || z > criteria || z < 0.1) //depth constraint  was z > criteria || z < 0.1
       {
-	if (z < 0.1){
-		std::cout<<"too close   "<< z <<"\n";	
-	}
+	//if (z < 0.1){
+	//	std::cout<<"too close   "<< z <<"\n";	
+	//}
+        if(!isnan(z)) std::cout << z <<"\n";
         rgb.at<cv::Vec3b>(cv::Point(u,v)) = cv::Vec3b(50,100,50);
       }
     }
@@ -729,10 +730,10 @@ bool Search::republish()
 
   sensor_msgs::Image::ConstPtr msg_depth_ptr = ros::topic::waitForMessage<sensor_msgs::Image>("/camera/aligned_depth_to_color/image_raw", ros::Duration(1));
   sensor_msgs::Image::ConstPtr msg_color_ptr = ros::topic::waitForMessage<sensor_msgs::Image>("/camera/color/image_raw", ros::Duration(1));
-  //TODO: i broke this on purpose -nwh
-  //sensor_msgs::CameraInfo::ConstPtr msg_depth_info_ptr = ros::topic::waitForMessage<sensor_msgs::CameraInfo>("/camera/aligned_depth_to_color/camera_info", ros::Duration(1));
+
+  sensor_msgs::CameraInfo::ConstPtr msg_depth_info_ptr = ros::topic::waitForMessage<sensor_msgs::CameraInfo>("/camera/aligned_depth_to_color/camera_info", ros::Duration(1));
   sensor_msgs::CameraInfo::ConstPtr msg_color_info_ptr = ros::topic::waitForMessage<sensor_msgs::CameraInfo>("/camera/color/camera_info", ros::Duration(1));
-  sensor_msgs::CameraInfo::ConstPtr msg_depth_info_ptr = msg_color_info_ptr;
+  
   pcl::PCLPointCloud2::ConstPtr msg_cloud_ptr = ros::topic::waitForMessage<pcl::PCLPointCloud2> ("/camera/depth/color/points", ros::Duration(1));
   tf2_msgs::TFMessage::ConstPtr msg_tf = ros::topic::waitForMessage<tf2_msgs::TFMessage> ("/tf", ros::Duration(1));
   tf2_msgs::TFMessage::ConstPtr msg_tf_static = ros::topic::waitForMessage<tf2_msgs::TFMessage> ("/tf_static", ros::Duration(1));
