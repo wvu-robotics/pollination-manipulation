@@ -540,7 +540,7 @@ sensor_msgs::PointCloud2 Search::_compute_point_cloud (manipulation_vision::Segm
 
     //xyzrgb
     pcl::PointXYZRGB point;
-    point.z = _depth.at<short int>( cv::Point(u,v) ) / 1.6; //1000 trevor 10
+    point.z = _depth.at<float>( cv::Point(u,v) );// / 20000; //1000 trevor 1.6
     point.x = (u - _depth_info.K[2]) * point.z / _depth_info.K[0];
     point.y = (v - _depth_info.K[5]) * point.z / _depth_info.K[4];
     point.r = segment.r[j];
@@ -675,7 +675,7 @@ bool Search::depth_constraint( cv::Mat & rgb,
 	//if (z < 0.1){
 	//	std::cout<<"too close   "<< z <<"\n";	
 	//}
-        if(!isnan(z)) std::cout << z <<"\n";
+        //if(!isnan(z)) std::cout << z <<"\n";
         rgb.at<cv::Vec3b>(cv::Point(u,v)) = cv::Vec3b(50,100,50);
       }
     }

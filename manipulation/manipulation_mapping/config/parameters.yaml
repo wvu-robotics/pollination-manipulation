@@ -8,7 +8,7 @@ filter:
 
   position_only: false # use position only graph ( estimate full pose by default)
   make_robust: false # use robust cost function
-  world_frame: "j2n6s300_link_base"
+  world_frame: "j2n6s300_link_base" #j2n6s300_link_base
   observation_thresh: 2
 
 attitude_est:
