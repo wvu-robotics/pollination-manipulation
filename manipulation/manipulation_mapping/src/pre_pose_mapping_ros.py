@@ -272,17 +272,15 @@ class BuildMap:
 
     def search_for_flowers(self):
         rospy.loginfo("Call search_for_flowers Service")
-        #rospy.wait_for_service('searchFF')
-        time.sleep(1)
+        rospy.wait_for_service('searchFF')
+        start_search_for_flowers=rospy.ServiceProxy('searchFF', SearchForFlowers)
+        try:
+            search_for_flowers_status = start_search_for_flowers()
+            rospy.loginfo(search_for_flowers_status)
+        except rospy.ServiceException as exc:
+            print("Service did not process request: " + str(exc))
+        #Add some exception
         return
-        # start_search_for_flowers=rospy.ServiceProxy('searchFF', SearchForFlowers)
-        # try:
-        #     search_for_flowers_status = start_search_for_flowers()
-        #     rospy.loginfo(search_for_flowers_status)
-        # except rospy.ServiceException as exc:
-        #     print("Service did not process request: " + str(exc))
-        # #Add some exception
-        # return
 
 
     def shutdown(self):
