@@ -71,7 +71,7 @@ update_flower_map (manipulation_common::UpdateFlowerMap::Request  &req,
 
         map_pub_ = nh.advertise<manipulation_common::FlowerMap>( "flower_map", 10, false);
         vec_pub_ = nh.advertise<visualization_msgs::MarkerArray>( "flower_vec", 10, false);
-        pts_pub_ = nh.advertise<sensor_msgs::PointCloud2>("flower_pts", 0, false);
+        pts_pub_ = nh.advertise<sensor_msgs::PointCloud2>("flower_pts", 10, false);
 
         send_flower_map(res, map_pub_);
         send_flower_vec(res, vec_pub_);
@@ -97,6 +97,7 @@ gtsam::Pose3 FlowerMapper::pose_msg_to_gtsam(const geometry_msgs::PoseStamped& p
         gtsam::Point3 point(pose.pose.position.x,
                             pose.pose.position.y,
                             pose.pose.position.z);
+	std::cout<<"point from pose msg to gtsam "<<pose.pose.position.x<<"  "<<pose.pose.position.y<<"  "<<pose.pose.position.z<<"\n";
 
         gtsam::Rot3 rot = gtsam::Rot3::quaternion( pose.pose.orientation.w,
                                                    pose.pose.orientation.x,
@@ -351,14 +352,14 @@ void FlowerMapper::send_flower_map(manipulation_common::UpdateFlowerMap::Respons
                         flower.prob = std::get<5>(*graph_iter);
 
 
-                        // Position
+                        // Position 
                         flower.point.header.frame_id = world_frame;
                         flower.point.header.stamp = timestamp;
                         flower.point.point.x = position[0];
                         flower.point.point.y = position[1];
                         flower.point.point.z = position[2];
 
-                        // Unit Vector
+                        // Unit Vector added *10 Trevor
                         flower.vec.header.frame_id = world_frame;
                         flower.vec.header.stamp = timestamp;
                         flower.vec.vector.x = normalVec[0];
@@ -459,14 +460,14 @@ void FlowerMapper::send_flower_vec(manipulation_common::UpdateFlowerMap::Respons
                         flower.num_obs = std::get<4>(*graph_iter);
                         flower.prob = std::get<5>(*graph_iter);
 
-                        // Position
+                        // Position added
                         flower.point.header.frame_id = world_frame;
                         flower.point.header.stamp = timestamp;
                         flower.point.point.x = position[0];
                         flower.point.point.y = position[1];
                         flower.point.point.z = position[2];
 
-                        // Unit Vector
+                        // Unit Vector added
                         flower.vec.header.frame_id = world_frame;
                         flower.vec.header.stamp = timestamp;
                         flower.vec.vector.x = normalVec[0];
