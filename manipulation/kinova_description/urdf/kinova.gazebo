@@ -16,7 +16,6 @@
     <gazebo reference="j2n6s300_link_6">
       <sensor name="j2n6s300_link_6_camera" type="depth">
         <pose>-0.05 0 .05 0.5236 -1.57 0</pose>
-	<!--<pose> 0 0 0 0 0 0</pose>-->
         <visualize>true</visualize>
         <update_rate>30</update_rate>
         <camera>

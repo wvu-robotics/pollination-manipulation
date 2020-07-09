@@ -5,15 +5,12 @@
 Once fully functional, launch the following, in the following order:
 
 ```
-bramblebee_realsense_camera.launch // currently a placeholder for camera integration to gazebo
 roslaunch kinova_gazebo robot_launch.launch
 roslaunch j2n6s300_moveit_config j2n6s300_gazebo_demo.launch
 roslaunch manipulation_mapping flower_mapper.launch
 rosrun manipulation_mapping pre_pose_mapping_ros.py
-roslaunch manipulation_vision approach_flower_action_node.launch
 rosrun manipulation_state_machine planning_ga_ros
 rosrun manipulation_control ee_go_to_pose_action_node
-rosrun manipulation_pollinator pollinator_control_node
 rosrun manipulation_state_machine state_machine_pollinating.py
 ```
 
