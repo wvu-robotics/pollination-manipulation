@@ -11,6 +11,7 @@ roslaunch manipulation_mapping flower_mapper.launch
 rosrun manipulation_mapping pre_pose_mapping_ros.py
 rosrun manipulation_state_machine planning_ga_ros
 rosrun manipulation_control ee_go_to_pose_action_node
+rosrun manipulation_state_machine final_previsit_poses_action_node
 rosrun manipulation_state_machine state_machine_pollinating.py
 ```
 
