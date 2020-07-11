@@ -272,7 +272,9 @@ class BuildMap:
 
     def search_for_flowers(self):
         rospy.loginfo("Call search_for_flowers Service")
-        rospy.wait_for_service('searchFF')
+        #rospy.wait_for_service('searchFF')
+        # time.sleep(1)
+        # return
         start_search_for_flowers=rospy.ServiceProxy('searchFF', SearchForFlowers)
         try:
             search_for_flowers_status = start_search_for_flowers()

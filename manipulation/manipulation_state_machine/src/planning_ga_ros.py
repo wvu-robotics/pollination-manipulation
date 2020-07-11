@@ -354,7 +354,7 @@ class Planning_Flower_Sequence:
                     self.ee_pose.orientation.z= des_quat[2]
                     self.ee_pose.orientation.w= des_quat[3]
                     self.ee_desired_poses.append(self.ee_pose)
-                    print(ee_pose)
+                    print(self.ee_pose)
         self.test_pose = rospy.Publisher("/test_pose", PoseArray, queue_size=1)
         self.test_pose_message = PoseArray()
         self.test_pose_message.header.frame_id = "j2n6s300_link_base"

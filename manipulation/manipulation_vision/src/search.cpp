@@ -347,16 +347,11 @@ std::cout<<"made it to the end of search cpp---------------------";
 bool Search::searchFF(manipulation_common::SearchForFlowers::Request  &req,
                       manipulation_common::SearchForFlowers::Response &res)
 {
-  // Variable to keep track of success across method calls. False if error occurs.
-  bool errorFlag;
-
   //republish data
   ROS_INFO("Republish image/depth data...");
   if(!republish())
   {
     ROS_ERROR("Republish failed! Are all camera topics publishing?");
-    errorFlag = false; // This line not needed but left in for consistency
-    res.success = false;
     return false;
   }
 
@@ -365,16 +360,17 @@ bool Search::searchFF(manipulation_common::SearchForFlowers::Request  &req,
   std::string filepath = ros::package::getPath("manipulation_vision") + "/data";
 
   //load rgb and depth
-  errorFlag = errorFlag && _load_rgb("/camera/color"); // deliberately not using &= for clarity in case right hand is ever non-bool
-  errorFlag = errorFlag && _load_depth("/camera/aligned_depth_to_color");
+  _load_rgb("/camera/color");
+  _load_depth("/camera/aligned_depth_to_color");
 
   //depth constraint (ignore points far aware)
-  errorFlag = errorFlag && depth_constraint(_rgb, _depth);
+  depth_constraint(_rgb, _depth);
 
   //do segmentation
-  errorFlag = errorFlag && _do_segmentation();
-  errorFlag = errorFlag && _do_classification();
-
+  _do_segmentation();
+	std::cout<<"did segmentation \n";
+  _do_classification();
+	std::cout<<"did classification \n";
   //compute point cloud for each segment
   std::vector<sensor_msgs::PointCloud2> point_clouds;
   std::vector<geometry_msgs::PoseStamped> poses;
@@ -408,42 +404,33 @@ bool Search::searchFF(manipulation_common::SearchForFlowers::Request  &req,
     //add pose and points to list
     point_clouds.push_back(point_cloud);
     poses.push_back(pose);
-    std::cout<<"Pushed pose back to the point cloud!!!!! \n";
+	std::cout<<"pushed it back to the point cloud!!!!! \n";
   }
 
   //publish point cloud of all segments for visualization
-  errorFlag = errorFlag && _publish_segments(point_clouds);
+  _publish_segments(point_clouds);
 
   //call server for updating flower map
   updateFlowerMapSrv.request.poses = poses;
   updateFlowerMapSrv.request.point_clouds = point_clouds;
-  if(!poses.empty())
+  if(addFlowersToMapClient.call(updateFlowerMapSrv))
   {
-    if(addFlowersToMapClient.call(updateFlowerMapSrv))
+    if(updateFlowerMapSrv.response.status == 1)
     {
-      if(updateFlowerMapSrv.response.status == 1)
-      {
-        ROS_INFO("UpdateFlowerMap call successful!");
-      }
-      else
-      {
-        ROS_ERROR("updateFlowerMapSrv.response.status != 1");
-        errorFlag = false;
-      }
+      ROS_INFO("UpdateFlowerMap call successful!");
     }
     else
     {
-      ROS_ERROR("Error! Failed to call service UpdateFlowerMap");
-      errorFlag = false;
+      ROS_ERROR("updateFlowerMapSrv.response.status == 0");
     }
   }
   else
   {
-    ROS_INFO("No valid poses found to pass to flower map!");
+    ROS_ERROR("Error! Failed to call service UpdateFlowerMap");
   }
-
+  std::cout<<"made it to the end of searchFF---------------------";
   //update response
-  res.success = errorFlag;
+  res.success = true;
 
   return true;
 
@@ -491,7 +478,6 @@ bool Search::_load_rgb(std::string topic)
   }
 
   _rgb_info = *msg_rgb_info_ptr;
-  return true;
 }
 
 //----------------------------------------------------------------------------
@@ -538,7 +524,6 @@ bool Search::_load_depth(std::string topic)
   }
 
   _depth_info = *msg_depth_info_ptr;
-  return true;
 }
 
 //----------------------------------------------------------------------------
@@ -555,7 +540,7 @@ sensor_msgs::PointCloud2 Search::_compute_point_cloud (manipulation_vision::Segm
 
     //xyzrgb
     pcl::PointXYZRGB point;
-    point.z = _depth.at<float>( cv::Point(u,v) ); //1000 trevor 1.6
+    point.z = _depth.at<float>( cv::Point(u,v) );// / 20000; //1000 trevor 1.6
     point.x = (u - _depth_info.K[2]) * point.z / _depth_info.K[0];
     point.y = (v - _depth_info.K[5]) * point.z / _depth_info.K[4];
     point.r = segment.r[j];
@@ -624,18 +609,15 @@ bool Search::_do_segmentation()
     if(segmentFlowersFFSrv.response.success == true)
     {
       ROS_INFO("SegmentFlowersFF call successful!");
-      return true;
     }
     else
     {
       ROS_ERROR("segmentFlowersFFSrv.success == false");
-      return false;
     }
   }
   else
   {
     ROS_ERROR("Error! Failed to call service SegmentFlowersFF");
-    return false;
   }
 }
 
@@ -652,18 +634,15 @@ bool Search::_do_classification()
    if(classifyFlowersSrv.response.success == true)
     {
       ROS_INFO("ClassifyFlowers call successful!");
-      return true;
     }
     else
     {
       ROS_ERROR("classifyFlowersSrv.success == false");
-      return false;
     }
   }
   else
   {
     ROS_ERROR("Error! Failed to call service ClassifyFlowers");
-    return false;
   }
 }
 
@@ -749,15 +728,15 @@ bool Search::republish()
   ros::Publisher pub_tf = nh.advertise<tf2_msgs::TFMessage>("/data/tf", 1);
   ros::Publisher pub_tf_static = nh.advertise<tf2_msgs::TFMessage>("/data/tf_static", 1);
 
-  sensor_msgs::Image::ConstPtr msg_depth_ptr = ros::topic::waitForMessage<sensor_msgs::Image>("/camera/aligned_depth_to_color/image_raw", ros::Duration(1));
-  sensor_msgs::Image::ConstPtr msg_color_ptr = ros::topic::waitForMessage<sensor_msgs::Image>("/camera/color/image_raw", ros::Duration(1));
+  sensor_msgs::Image::ConstPtr msg_depth_ptr = ros::topic::waitForMessage<sensor_msgs::Image>("/camera/aligned_depth_to_color/image_raw", ros::Duration(5));
+  sensor_msgs::Image::ConstPtr msg_color_ptr = ros::topic::waitForMessage<sensor_msgs::Image>("/camera/color/image_raw", ros::Duration(5));
 
-  sensor_msgs::CameraInfo::ConstPtr msg_depth_info_ptr = ros::topic::waitForMessage<sensor_msgs::CameraInfo>("/camera/aligned_depth_to_color/camera_info", ros::Duration(1));
-  sensor_msgs::CameraInfo::ConstPtr msg_color_info_ptr = ros::topic::waitForMessage<sensor_msgs::CameraInfo>("/camera/color/camera_info", ros::Duration(1));
+  sensor_msgs::CameraInfo::ConstPtr msg_depth_info_ptr = ros::topic::waitForMessage<sensor_msgs::CameraInfo>("/camera/aligned_depth_to_color/camera_info", ros::Duration(5));
+  sensor_msgs::CameraInfo::ConstPtr msg_color_info_ptr = ros::topic::waitForMessage<sensor_msgs::CameraInfo>("/camera/color/camera_info", ros::Duration(5));
   
-  pcl::PCLPointCloud2::ConstPtr msg_cloud_ptr = ros::topic::waitForMessage<pcl::PCLPointCloud2> ("/camera/depth/color/points", ros::Duration(1));
-  tf2_msgs::TFMessage::ConstPtr msg_tf = ros::topic::waitForMessage<tf2_msgs::TFMessage> ("/tf", ros::Duration(1));
-  tf2_msgs::TFMessage::ConstPtr msg_tf_static = ros::topic::waitForMessage<tf2_msgs::TFMessage> ("/tf_static", ros::Duration(1));
+  pcl::PCLPointCloud2::ConstPtr msg_cloud_ptr = ros::topic::waitForMessage<pcl::PCLPointCloud2> ("/camera/depth/color/points", ros::Duration(5));
+  tf2_msgs::TFMessage::ConstPtr msg_tf = ros::topic::waitForMessage<tf2_msgs::TFMessage> ("/tf", ros::Duration(5));
+  tf2_msgs::TFMessage::ConstPtr msg_tf_static = ros::topic::waitForMessage<tf2_msgs::TFMessage> ("/tf_static", ros::Duration(5));
 
   // Check for null ptrs so node doesn't die if one topic is missing
   if(msg_depth_ptr == NULL ||
@@ -811,7 +790,6 @@ bool Search::_publish_segments(std::vector<sensor_msgs::PointCloud2> points_clou
 
   //publish merged point clouds
   pubSeg.publish(ros_merged_pc2);
-  return true;
 }
 
 }

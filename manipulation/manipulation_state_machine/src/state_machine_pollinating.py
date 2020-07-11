@@ -62,9 +62,7 @@ class Pollination_manipulation:
             self.end_pollination.data = False
             self.pollination_end_pub.publish(self.end_pollination)
             if self.start_pollination.data == True:
-                #self.mapping()
-                self.search_for_flowers() #delete
-                self.planning()           #delete
+                self.mapping()
 
     def mapping(self):
         rospy.loginfo("Map_state")
@@ -122,39 +120,40 @@ class Pollination_manipulation:
         #self.current_flower.orientation.w =  3.5750321417e-06
 
 
-        rospy.wait_for_service('find_previsit_poses')
-        _find_previsit_poses=rospy.ServiceProxy('find_previsit_poses', FindPrevisitPoses)
-        try:
-            _previsit_poses = _find_previsit_poses(self.current_flower)
-        except rospy.ServiceException as exc:
-            print("Service did not process request: " + str(exc))
+        # rospy.wait_for_service('find_previsit_poses')
+        # _find_previsit_poses=rospy.ServiceProxy('find_previsit_poses', FindPrevisitPoses)
+        # try:
+        #     _previsit_poses = _find_previsit_poses(self.current_flower)
+        # except rospy.ServiceException as exc:
+        #     print("Service did not process request: " + str(exc))
         # rospy.loginfo(_previsit_poses.ee_poses)
 
         #Move to the offset pose to better estimate flower position
-        for _goal in _previsit_poses.ee_poses:
-            _i=1
-            _control_client.wait_for_server()
-            _send_goal = PoseStamped()
-            _send_goal.pose = _goal
-            # rospy.loginfo(_send_goal)
-            _control_goal = EEGoToPoseGoal(goal_pose=_send_goal)
-            _control_client.send_goal(_control_goal)
-            _control_client.wait_for_result()
-            _control_result=_control_client.get_result()
-            # if (_i==1 or _i==5)and _control_result.goal_reached==False:
-            if _control_result.goal_reached==False:
-                rospy.logerr("Skipping flower")
-                self.flowers_not_pollinated_due_error.append(self.flowers_order[self.number_flowers_pollinated])
-#                self.flowers_order = self.flowers_order.append(self.flowers_order[self.number_flowers_pollinated])
-#                self.flowers_with_offset = self.flowers_with_offset.append(self.flowers_with_offset[self.number_flowers_pollinated])
-                self.number_flowers_pollinated = self.number_flowers_pollinated +1
-                if self.number_flowers_pollinated < len(self.flowers_order):
-                   rospy.loginfo(self.number_flowers_pollinated)
-                   self.individual_flower_pollination_procedure()
-                else:
-                   self.end()
-            self.search_for_flowers()
-            _i = _i+1
+#         for _goal in _previsit_poses.ee_poses:
+#             _i=1
+#             _control_client.wait_for_server()
+#             _send_goal = PoseStamped()
+#             _send_goal.pose = _goal
+#             # rospy.loginfo(_send_goal)
+#             _control_goal = EEGoToPoseGoal(goal_pose=_send_goal)
+#             _control_client.send_goal(_control_goal)
+#             _control_client.wait_for_result()
+#             _control_result=_control_client.get_result()
+#             # if (_i==1 or _i==5)and _control_result.goal_reached==False:
+#             if _control_result.goal_reached==False:
+#                 rospy.logerr("Skipping flower")
+#                 self.flowers_not_pollinated_due_error.append(self.flowers_order[self.number_flowers_pollinated])
+# #                self.flowers_order = self.flowers_order.append(self.flowers_order[self.number_flowers_pollinated])
+# #                self.flowers_with_offset = self.flowers_with_offset.append(self.flowers_with_offset[self.number_flowers_pollinated])
+#                 self.number_flowers_pollinated = self.number_flowers_pollinated +1
+#                 if self.number_flowers_pollinated < len(self.flowers_order):
+#                    rospy.loginfo(self.number_flowers_pollinated)
+#                    self.individual_flower_pollination_procedure()
+#                 else:
+#                    self.end()
+#             self.search_for_flowers()
+#             _i = _i+1
+
             # rospy.loginfo(_control_result)
             # rospy.loginfo("current Flower:")
             # rospy.loginfo(self.current_flower)
@@ -186,7 +185,9 @@ class Pollination_manipulation:
         # rospy.loginfo(_control_result)
 
         if _control_result.goal_reached==True:
-            self.visual_servoing()
+            pass
+            #some other approach logic, move forward toward flower, then back out of the flower
+            # self.visual_servoing()
         else:
             self.flowers_not_pollinated_due_error.append(self.flowers_order[self.number_flowers_pollinated])
             self.number_flowers_pollinated = self.number_flowers_pollinated +1
@@ -220,7 +221,8 @@ class Pollination_manipulation:
         _visual_servoing_result=_visual_servoing_client.get_result().flower_approached
         rospy.loginfo("Visual servoing result: %r", _visual_servoing_result)
         if _visual_servoing_result==True:
-            self.pollinating()
+            #self.pollinating()
+            pass
         else:
             self.logerr("Visual Servoing was not completed")
             self.individual_flower_pollination_procedure()
@@ -256,10 +258,13 @@ class Pollination_manipulation:
         self.flowers_order = Int16()
         self.flowers = FlowerMap()
         self.flowers_with_offset = Pose()
-        self.home_position()
+        #self.home_position()
+
+        #wipe flower map here
         self.start()
 
     def home_position(self):
+        #create some retracted position for this
         rospy.loginfo("Go to Home Position/Unwind")
         _client = actionlib.SimpleActionClient( "/j2n6s300_driver/joints_action/joint_angles",kinova_msgs.msg.ArmJointAnglesAction)
         _client.wait_for_server()

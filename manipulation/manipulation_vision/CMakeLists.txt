@@ -87,8 +87,6 @@ include_directories(
 	${kinova_driver_INCLUDE_DIRS}
 	${PYTHON_INCLUDE_DIRS}
 	/usr/include/python2.7/
-	${OpenCV_INCLUDE_DIRS} # ROS's OpenCV
-        /usr/local/include/opencv2 # Core OpenCV and extra modules
 )
 
 include_directories(SYSTEM ${Boost_INCLUDE_DIR} ${EIGEN_INCLUDE_DIRS})
@@ -96,24 +94,18 @@ include_directories(SYSTEM ${Boost_INCLUDE_DIR} ${EIGEN_INCLUDE_DIRS})
 ## Declare a C++ library
 add_library(segmentation src/segmentation.cpp)
 target_link_libraries(segmentation ${catkin_LIBRARIES}
-	${OpenCV_LIBRARIES}
-	${OpenCV_LIBS} 
-	 /usr/local/lib
+	${OpenCV_LIBS}
 )
 
 add_library(classification src/classification.cpp)
 target_link_libraries(classification ${catkin_LIBRARIES}
-	${OpenCV_LIBRARIES}
-	${OpenCV_LIBS} 
-	 /usr/local/lib
+	${OpenCV_LIBS}
 	${PYTHON_LIBRARIES}
 )
 
 add_library(search src/search.cpp)
 target_link_libraries(search ${catkin_LIBRARIES}
-	${OpenCV_LIBRARIES}
-	${OpenCV_LIBS} 
-	 /usr/local/lib
+	${OpenCV_LIBS}
 	segmentation
 	classification
 )
@@ -181,7 +173,5 @@ add_executable(depthcallback_test src/depthcallback_test.cpp)
 add_dependencies(depthcallback_test manipulation_vision_generate_messages_cpp)
 target_link_libraries(depthcallback_test
 	${catkin_LIBRARIES}
-	${OpenCV_LIBRARIES}
-	${OpenCV_LIBS} 
-	 /usr/local/lib
+	${OpenCV_LIBS}
 )
