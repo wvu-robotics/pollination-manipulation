@@ -57,9 +57,9 @@ EEGoToPoseAction::EEGoToPoseAction(std::string _action_name, ros::NodeHandle &_n
 
   group_arm_ = new moveit::planning_interface::MoveGroupInterface("arm");
   group_arm_->startStateMonitor();
-  group_arm_->setPlanningTime(10.0);
-  group_arm_->setPlannerId("PRMkConfigDefault");
-  group_arm_->setGoalOrientationTolerance(0.01); // 0.01 radians
+  group_arm_->setPlanningTime(20.0);   //default of 10.0
+  group_arm_->setPlannerId("PRMstarkConfigDefault");
+  group_arm_->setGoalOrientationTolerance(0.1); // 0.01 radians
   group_arm_->setGoalPositionTolerance(0.01); // 0.01 m (radius of sphere where end effector must reach)
   group_arm_->setStartStateToCurrentState();
   group_arm_->setEndEffectorLink(robot_type_ + "_end_effector");
@@ -199,10 +199,17 @@ void EEGoToPoseAction::execute(const manipulation_control::EEGoToPoseGoal::Const
   else
     action_server_.setAborted(result_);
 }
-
 bool EEGoToPoseAction::evaluate_plan(moveit::planning_interface::MoveGroupInterface &_group)
 {
   int count = 0;
+  //initial time setup, make sure it gets reset first time
+  _group.setPlanningTime(5);
+  _group.setPlannerId("PRMstarkConfigDefault");
+  group_arm_->setGoalOrientationTolerance(0.1); // 0.01 radians
+  group_arm_->setGoalPositionTolerance(0.01); 
+
+  //seems like poseTarget gets wiped after bad planning, put this in to keep it in memory
+  geometry_msgs::PoseStamped goal_pose_stamped = group_arm_->getPoseTarget();
 
   moveit::planning_interface::MoveGroupInterface::Plan my_plan;
   const robot_state::JointModelGroup *joint_model_group = robot_state_->getJointModelGroup("arm");
@@ -212,29 +219,39 @@ bool EEGoToPoseAction::evaluate_plan(moveit::planning_interface::MoveGroupInterf
 
 
   /***Testing to use only a single planner
-
+*/
   // try to find a success plan.
-  double plan_time;
-  while (result != moveit::planning_interface::MoveItErrorCode::SUCCESS && count < 2)
+  double plan_time, orientation_tolerance, position_tolerance;
+  while (!result && count < 5)
   {
-    get_ee_pose();
+    //get_ee_pose();
       ++count;
       plan_time = count*10;
-      ROS_INFO("Setting plan time to %f sec", plan_time);
+      orientation_tolerance = count*.01;
+      position_tolerance = count*0.1;
+
+      ROS_INFO("Setting plan time to %f sec, orientation tolerance to %f radians, and position tolerance to %f meters", plan_time,orientation_tolerance,position_tolerance);
       _group.setPlanningTime(plan_time);
+      group_arm_->setGoalOrientationTolerance(0.1); // 0.01 radians
+      group_arm_->setGoalPositionTolerance(0.01); 
+
+      //make sure pose target is maintained properly
+      group_arm_->setPoseTarget(goal_pose_stamped.pose);
+
+
       //_group.setPlannerId("RRTConnectkConfigDefault");
-      result = _group.plan(my_plan);
+      result = (_group.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
 
       // rviz publish result trajectory
-      visual_tools_.publishTrajectoryLine(my_plan.trajectory_, joint_model_group);
+      //visual_tools_.publishTrajectoryLine(my_plan.trajectory_, joint_model_group);
       visual_tools_.trigger();
 
       ros::WallDuration(0.1).sleep();
   }
-  */
+  
 
   // plan not found
-  if (result != moveit::planning_interface::MoveItErrorCode::SUCCESS)
+  if (!result)
   {
     ROS_ERROR("Planning failed, reached max attempt: %d", count);
     return false;

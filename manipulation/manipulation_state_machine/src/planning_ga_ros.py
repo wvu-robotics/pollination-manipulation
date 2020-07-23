@@ -243,7 +243,7 @@ class Planning_Flower_Sequence:
         self.ee_pose = Pose()
         flower_ = self.flowers[0]
         pos_flower = np.array([flower_.point.point.x, flower_.point.point.y, flower_.point.point.z])
-        new_offset = np.multiply(np.array([-0.2,-0.2,-0.2]),np.array([flower_.vec.vector.x,flower_.vec.vector.y,flower_.vec.vector.z]))
+        new_offset = np.multiply(np.array([-0.05,-0.05,-0.05]),np.array([flower_.vec.vector.x,flower_.vec.vector.y,flower_.vec.vector.z]))
         #rot_flower = t_.quaternion_matrix([flower_.pose.orientation.x,
         #                                    flower_.pose.orientation.y,
         #                                    flower_.pose.orientation.z,
@@ -290,7 +290,7 @@ class Planning_Flower_Sequence:
                 if flower_.id == i.id:
                     self.ee_pose = Pose()
                     pos_flower = np.array([flower_.point.point.x, flower_.point.point.y, flower_.point.point.z])
-                    new_offset = np.multiply(np.array([-0.2,-0.2,-0.2]),np.array([flower_.vec.vector.x,flower_.vec.vector.y,flower_.vec.vector.z]))
+                    new_offset = np.multiply(np.array([-0.05,-0.05,-0.05]),np.array([flower_.vec.vector.x,flower_.vec.vector.y,flower_.vec.vector.z]))
                     #rot_flower = t_.quaternion_matrix([flower_.pose.orientation.x,
                     #                                    flower_.pose.orientation.y,
                     #                                    flower_.pose.orientation.z,
@@ -356,6 +356,10 @@ class Planning_Flower_Sequence:
                     self.ee_desired_poses.append(self.ee_pose)
                     print(self.ee_pose)
         self.test_pose = rospy.Publisher("/test_pose", PoseArray, queue_size=1)
+        #fix issue with publishing before connection established
+        while self.test_pose.get_num_connections() == 0:
+            rospy.loginfo("Waiting for subscriber to connect")
+            rospy.sleep(1)
         self.test_pose_message = PoseArray()
         self.test_pose_message.header.frame_id = "j2n6s300_link_base"
         self.test_pose_message.poses = self.ee_desired_poses
