@@ -49,11 +49,11 @@ Intel RealSense working with:
 
 Also, MoveIt must be installed:
 ```
-sudo apt-get install -y ros-kinetic-moveit ros-kinetic-trac-ik ros-kinetic-moveit-visual-tools
+sudo apt-get install -y ros-melodic-moveit ros-melodic-trac-ik ros-melodic-moveit-visual-tools
 ```
-If ros-kinetic-desktop or ros-kinetic-ros-base was installed, then pcl_ros and tf2-geometry_msgs most likely need to be separately installed:
+If ros-melodic-desktop or ros-melodic-ros-base was installed, then pcl_ros and tf2-geometry_msgs most likely need to be separately installed:
 ```
-sudo apt-get install -y ros-kinetic-pcl-ros ros-kinetic-tf2-geometry-msgs
+sudo apt-get install -y ros-melodic-pcl-ros ros-melodic-tf2-geometry-msgs
 ```
 
 #Pandas
