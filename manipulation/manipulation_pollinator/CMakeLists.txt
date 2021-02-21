@@ -52,11 +52,15 @@ include_directories(
 )
 
 add_library(maestro src/maestro.cpp)
+add_dependencies(maestro ${maestro_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
 target_link_libraries(maestro ${catkin_LIBRARIES}
 	# ${OpenCV_LIBS}
 )
 
 add_library(pollinator_control src/pollinator_control.cpp)
+add_dependencies(pollinator_control ${pollination_control_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
 target_link_libraries(pollinator_control
 	${catkin_LIBRARIES}
 	maestro
@@ -64,12 +68,16 @@ target_link_libraries(pollinator_control
 
 ## Declare a C++ executable
 add_executable(end_effector_node src/end_effector.cpp)
+add_dependencies(end_effector_node ${end_effector_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
 target_link_libraries(end_effector_node
 	${catkin_LIBRARIES}
 	maestro
 )
 
 add_executable(pollinator_control_node src/pollinator_control_node.cpp)
+add_dependencies(pollinator_control_node ${pollinator_control_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
 target_link_libraries(pollinator_control_node
 	${catkin_LIBRARIES}
 	pollinator_control

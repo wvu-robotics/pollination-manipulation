@@ -139,6 +139,8 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(find_marker_node src/aruco_find_markers.cpp)
+add_dependencies(find_marker_node ${find_marker_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
 target_link_libraries(find_marker_node
   ${catkin_LIBRARIES}
   ${OpenCV_LIBRARIES}

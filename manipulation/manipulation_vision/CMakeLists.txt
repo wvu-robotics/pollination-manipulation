@@ -95,6 +95,8 @@ include_directories(SYSTEM ${Boost_INCLUDE_DIR} ${EIGEN_INCLUDE_DIRS})
 
 ## Declare a C++ library
 add_library(segmentation src/segmentation.cpp)
+add_dependencies(segmentation manipulation_vision_generate_messages_cpp ${segmentation_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
 target_link_libraries(segmentation ${catkin_LIBRARIES}
 	${OpenCV_LIBRARIES}
 	${OpenCV_LIBS} 
@@ -102,6 +104,8 @@ target_link_libraries(segmentation ${catkin_LIBRARIES}
 )
 
 add_library(classification src/classification.cpp)
+add_dependencies(classification manipulation_vision_generate_messages_cpp ${classification_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
 target_link_libraries(classification ${catkin_LIBRARIES}
 	${OpenCV_LIBRARIES}
 	${OpenCV_LIBS} 
@@ -110,6 +114,8 @@ target_link_libraries(classification ${catkin_LIBRARIES}
 )
 
 add_library(search src/search.cpp)
+add_dependencies(search ${search_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
 target_link_libraries(search ${catkin_LIBRARIES}
 	${OpenCV_LIBRARIES}
 	${OpenCV_LIBS} 
