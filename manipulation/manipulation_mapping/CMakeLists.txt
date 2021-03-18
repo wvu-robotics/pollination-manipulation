@@ -28,7 +28,7 @@ find_package(catkin REQUIRED COMPONENTS
   manipulation_control
   manipulation_common
   aruco_markers
-  parameter_utils
+  manipulation_parameter_utils
 )
 
 find_package(Boost REQUIRED system filesystem date_time thread serialization regex timer)
@@ -75,7 +75,7 @@ generate_messages(
 catkin_package(
   INCLUDE_DIRS include
 	CATKIN_DEPENDS message_generation message_runtime roscpp rospy std_msgs actionlib_msgs moveit_core moveit_ros_planning_interface
-  parameter_utils
+  manipulation_parameter_utils
 )
 
 ###########
