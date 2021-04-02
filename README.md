@@ -32,7 +32,7 @@ rostopic pub -1 /start_pollination_procedures std_msgs/Bool '{data: True}'
 
 ## Requirements
 
-This software has been tested on Ubuntu 16.04 with ROS Kinetic with OpenCV 3.4 as well as OpenCV modules. Please use [these instructions to install OpenCV 3 with the extra modules](https://github.com/wvu-irl/guides-and-resources/wiki/Core-OpenCV-and-Extra-Modules).
+This software has been tested on Ubuntu 16.04 with ROS Kinetic with OpenCV 3.4.13 as well as OpenCV modules. Please use [these instructions to install OpenCV 3 with the extra modules](https://github.com/wvu-irl/guides-and-resources/wiki/Core-OpenCV-and-Extra-Modules).
 
 This uses submodules, please refer to the [wiki page](https://github.com/wvu-irl/guides-and-resources/wiki/Git-Submodules) on how to work with submodules.
 
@@ -68,6 +68,9 @@ Install tensorflow (CPU version) via pip:
       python -c "import tensorflow as tf; print(tf.__version__)"
 
 ## GTSAM
-This software requires [GTSAM](https://bitbucket.org/gtborg/gtsam). 
+This software requires [GTSAM 4.0.3](https://github.com/borglab/gtsam/releases/tag/4.0.3). 
 
 Make sure GTSAM is built with correct version of Eigen see https://github.com/erik-nelson/blam/issues/48
+
+## PCL
+PCL 1.8 is installed with ROS from the `ros-melodic-pcl-ros` package. An issue may be encountered that is an interaction between a conflicting data type between PCL and OpenCV. The best known fix at the moment is described in this [pull request](https://github.com/PointCloudLibrary/pcl/pull/4266). This issue does not occur on some computers, however, so this fix is likely not the best solution. It has to do with some interaction between particular versions of PCL and OpenCV, when both used in the same project.
