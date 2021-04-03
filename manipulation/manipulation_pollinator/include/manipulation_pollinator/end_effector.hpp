@@ -19,13 +19,14 @@ unsigned short percentageToPWM(float percentage)
     }
     else
     {
-        return (unsigned short)(40.0*percentage + 4000.0);
+        return (unsigned short)(40.0*percentage + 4000.0);//calibration for line
+//ar actuators -love Trevor Smith (i believe that it is thinking that it is at the base, so adding 1500, which is the middle number might fix it)
     }
 }
 
 const std::vector<float> zeroSignals()
 {
-  return {0, 0, 0};
+  return {50, 50, 50};
 }
 
 void printPositions(maestro& servos)
