@@ -20,7 +20,6 @@
       <arg name="enable_infra1"     value="false"/>
       <arg name="enable_infra2"     value="false"/>
       <arg name="enable_fisheye"    value="false"/>
-      <arg name="enable_imu"        value="true"/>
       <arg name="enable_pointcloud" value="true"/>
       <arg name="enable_sync"       value="true"/>
       <arg name="align_depth"       value="true"/>

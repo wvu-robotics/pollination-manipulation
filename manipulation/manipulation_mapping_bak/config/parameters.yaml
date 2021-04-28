@@ -1,0 +1,16 @@
+filter:
+  # These are totally fabricated numbers --- figure out true values in the future
+  noise_position_classifier: 0.1      # cm
+  noise_attitude_classifier: 10.0      # deg
+  noise_position_process: 0.01 # cm
+  noise_attitude_process: 1.0  #deg
+  association_distance_thresh: 0.10 #m  --- match if sqrt( ( pose_1-pose_2 )'*(pose_1-pose_2) ) < thresh
+
+  position_only: false # use position only graph ( estimate full pose by default)
+  make_robust: false # use robust cost function
+  world_frame: "j2n6s300_link_base" #j2n6s300_link_base
+  observation_thresh: 2
+
+attitude_est:
+  estimator_type: 0 # {0,1,2} -> {LMeDS, RRAANSAC, MLESAC}
+  model_distance_thresh: 0.03 # distance to model threshold (m.)

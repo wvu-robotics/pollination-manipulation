@@ -18,7 +18,7 @@
   </include>
 
   <!-- Load and launch realsense camera -->
-  <!-- <include file="$(find j2n6s300_moveit_config)/launch/bramblebee_realsense_camera.launch" /> -->
+ <include file="$(find j2n6s300_moveit_config)/launch/bramblebee_realsense_camera.launch" />
 
   <!-- Load & launch aruco markers -->
   <include file="$(find aruco_markers)/launch/find_markers.launch"/>

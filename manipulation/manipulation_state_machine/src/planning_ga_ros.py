@@ -243,8 +243,15 @@ class Planning_Flower_Sequence:
         self.ee_pose = Pose()
         flower_ = self.flowers[0]
         pos_flower = np.array([flower_.point.point.x, flower_.point.point.y, flower_.point.point.z])
-        new_offset = np.multiply(np.array([-0.2,-0.2,-0.2]),np.array([flower_.vec.vector.x,flower_.vec.vector.y,flower_.vec.vector.z]))
-        #rot_flower = t_.quaternion_matrix([flower_.pose.orientation.x,
+#        new_offset = np.multiply(np.array([-0.2,-0.2,-0.2]),np.array([flower_.vec.vector.x,flower_.vec.vector.y,flower_.vec.vector.z]))
+#        new_offset = np.multiply(np.array([-0.2,-0.2,-0.2]),np.array([0.0,1.0,0.0]))
+        new_offset = np.array([0.0,0.2,0.0])
+
+        print("Flower pose: {}".format(pos_flower))
+
+        print("Offset pose: {}".format(new_offset))
+
+         #rot_flower = t_.quaternion_matrix([flower_.pose.orientation.x,
         #                                    flower_.pose.orientation.y,
         #                                    flower_.pose.orientation.z,
         #                                    flower_.pose.orientation.w])
@@ -258,31 +265,37 @@ class Planning_Flower_Sequence:
         self.ee_pose.position.z= des_pos[2]
 
         #Follow Jared Instructions
-        n_ = np.multiply(np.array([flower_.vec.vector.x, flower_.vec.vector.y, flower_.vec.vector.z]),-1)
-        print("n_vector:",n_)
-        _,quat = self.get_transform_end_effector_to_global()
-        gRe = t_.quaternion_matrix(quat)[0:3,0:3]
-        print("gRe:",gRe)
-        q_ = np.multiply(gRe,np.transpose([0,0,1]))[0:3,2]
-        print("q_vector:",q_)
-        u_ = np.multiply(np.dot(np.copy(n_),np.copy(n_)),np.copy(n_))/np.linalg.norm(np.multiply(np.dot(np.copy(n_),np.copy(n_)),np.copy(n_)))
-        print("u_:",u_)
-        v_ = (np.copy(q_)-np.multiply(np.dot(np.copy(n_),np.copy(q_)),np.copy(n_)))/np.linalg.norm((np.copy(q_)-np.multiply(np.dot(np.copy(n_),np.copy(q_)),np.copy(n_))))
-        print("v_:",v_)
-        w_ = np.cross(np.copy(q_),np.copy(n_))/np.linalg.norm(np.cross(np.copy(q_),np.copy(n_)))
-        F = np.concatenate(([np.transpose(u_)],[np.transpose(v_)],[np.transpose(w_)]))  #[u,v,w]^-1
-        print("F_:",F)
-        G = np.array([[np.dot(n_,q_),-1*np.linalg.norm(np.cross(q_,n_)),0],[np.linalg.norm(np.cross(q_,n_)),np.dot(n_,q_),0],[0,0,1]])
-        eRe_prime=np.multiply(np.transpose(F),np.multiply(G,F))
-        gRe_prime=np.multiply(np.copy(gRe),np.copy(eRe_prime))
-        print("gRe_new': ",gRe_prime)
-        homog_matrixes = np.concatenate((np.concatenate((gRe_prime,np.transpose([[0,0,0]])),axis=1),np.array([[0,0,0,1]])))
-        des_quat = t_.quaternion_from_matrix(homog_matrixes)
-        print(des_quat)
-        self.ee_pose.orientation.x= des_quat[0]
-        self.ee_pose.orientation.y= des_quat[1]
-        self.ee_pose.orientation.z= des_quat[2]
-        self.ee_pose.orientation.w= des_quat[3]
+        # n_ = np.multiply(np.array([flower_.vec.vector.x, flower_.vec.vector.y, flower_.vec.vector.z]),-1)
+        # print("n_vector:",n_)
+        # _,quat = self.get_transform_end_effector_to_global()
+        # gRe = t_.quaternion_matrix(quat)[0:3,0:3]
+        # print("gRe:",gRe)
+        # q_ = np.multiply(gRe,np.transpose([0,0,1]))[0:3,2]
+        # print("q_vector:",q_)
+        # u_ = np.multiply(np.dot(np.copy(n_),np.copy(n_)),np.copy(n_))/np.linalg.norm(np.multiply(np.dot(np.copy(n_),np.copy(n_)),np.copy(n_)))
+        # print("u_:",u_)
+        # v_ = (np.copy(q_)-np.multiply(np.dot(np.copy(n_),np.copy(q_)),np.copy(n_)))/np.linalg.norm((np.copy(q_)-np.multiply(np.dot(np.copy(n_),np.copy(q_)),np.copy(n_))))
+        # print("v_:",v_)
+        # w_ = np.cross(np.copy(q_),np.copy(n_))/np.linalg.norm(np.cross(np.copy(q_),np.copy(n_)))
+        # F = np.concatenate(([np.transpose(u_)],[np.transpose(v_)],[np.transpose(w_)]))  #[u,v,w]^-1
+        # print("F_:",F)
+        # G = np.array([[np.dot(n_,q_),-1*np.linalg.norm(np.cross(q_,n_)),0],[np.linalg.norm(np.cross(q_,n_)),np.dot(n_,q_),0],[0,0,1]])
+        # eRe_prime=np.multiply(np.transpose(F),np.multiply(G,F))
+        # gRe_prime=np.multiply(np.copy(gRe),np.copy(eRe_prime))
+        # print("gRe_new': ",gRe_prime)
+        # homog_matrixes = np.concatenate((np.concatenate((gRe_prime,np.transpose([[0,0,0]])),axis=1),np.array([[0,0,0,1]])))
+        # des_quat = t_.quaternion_from_matrix(homog_matrixes)
+        # print(des_quat)
+        # self.ee_pose.orientation.x= des_quat[0]
+        # self.ee_pose.orientation.y= des_quat[1]
+        # self.ee_pose.orientation.z= des_quat[2]
+        # self.ee_pose.orientation.w= des_quat[3]
+
+#         -0.5, -0.5, 0.5, -0.5 
+        self.ee_pose.orientation.x= -0.5
+        self.ee_pose.orientation.y= -0.5
+        self.ee_pose.orientation.z=  0.5
+        self.ee_pose.orientation.w= -0.5
 
     def get_desired_previsit_ee_pose(self):
         for i in self.best_route:
@@ -290,7 +303,12 @@ class Planning_Flower_Sequence:
                 if flower_.id == i.id:
                     self.ee_pose = Pose()
                     pos_flower = np.array([flower_.point.point.x, flower_.point.point.y, flower_.point.point.z])
-                    new_offset = np.multiply(np.array([-0.2,-0.2,-0.2]),np.array([flower_.vec.vector.x,flower_.vec.vector.y,flower_.vec.vector.z]))
+                    #new_offset = np.multiply(np.array([-0.2,-0.2,-0.2]),np.array([flower_.vec.vector.x,flower_.vec.vector.y,flower_.vec.vector.z]))
+                    new_offset = np.array([0.0,0.2,0.0])
+
+                    print("Flower pose: {}".format(pos_flower))
+
+                    print("Offset pose: {}".format(new_offset))
                     #rot_flower = t_.quaternion_matrix([flower_.pose.orientation.x,
                     #                                    flower_.pose.orientation.y,
                     #                                    flower_.pose.orientation.z,
@@ -308,59 +326,60 @@ class Planning_Flower_Sequence:
                     self.ee_pose.position.y= des_pos[1]
                     self.ee_pose.position.z= des_pos[2]
 
-                    #Follow Jared Instructions
-                    n_ = np.multiply(np.array([flower_.vec.vector.x, flower_.vec.vector.y, flower_.vec.vector.z]),-1)
-                    print("n_vector:",n_)
-                    _,quat = self.get_transform_end_effector_to_global()
-                    gRe = t_.quaternion_matrix(quat)[0:3,0:3]
-                    print("gRe:",gRe)
-                    q_ = np.multiply(gRe,np.transpose([0,0,1]))[0:3,2]
-                    print("q_vector:",q_)
-
-                    u_ = np.multiply(np.dot(np.copy(n_),np.copy(q_)),np.copy(n_))/np.linalg.norm(np.multiply(np.dot(np.copy(n_),np.copy(q_)),np.copy(n_)))
-                    print("u_:",u_)
-                    v_ = (np.copy(q_)-np.multiply(np.dot(np.copy(n_),np.copy(q_)),np.copy(n_)))/np.linalg.norm((np.copy(q_)-np.multiply(np.dot(np.copy(n_),np.copy(q_)),np.copy(n_))))
-                    print("v_:",v_)
-                    w_ = np.cross(np.copy(q_),np.copy(n_))/np.linalg.norm(np.cross(np.copy(q_),np.copy(n_)))
-                    print("w_:",w_)
-                    print("u v w normal:", np.linalg.norm(u_),np.linalg.norm(v_),np.linalg.norm(w_))
-
-                    F = (np.concatenate(([np.transpose(u_)],[np.transpose(v_)],[np.transpose(w_)])))  #[u,v,w]^-1
-                    print("F_:",F)
-
-
-                    G = np.array([[np.dot(n_,q_),-1*np.linalg.norm(np.cross(q_,n_)),0],[np.linalg.norm(np.cross(q_,n_)),np.dot(n_,q_),0],[0,0,1]])
-                    print("G", G)
-                    if n_[2]>0:
-                        temp1_ = np.matmul(np.copy(np.linalg.inv(G)),np.copy(F))
-                        print("Temp(g is inverse)",temp1_)
-                        eRe_prime=np.matmul(np.linalg.inv(F),temp1_)
-                        print("eRe_prime",eRe_prime)
-                    else:
-                        temp1_ = np.matmul(np.copy(G),np.copy(F))
-                        print("Temp",temp1_)
-                        eRe_prime=np.matmul(np.linalg.inv(F),temp1_)
-                        print("eRe_prime",eRe_prime)
-                    gRe_prime=np.matmul(np.copy(eRe_prime),np.copy(gRe))
-                    print("gRe_prime': ",gRe_prime)
-                    print("gRe_prime_Normal", np.linalg.norm(gRe_prime[:,0]),np.linalg.norm(gRe_prime[:,1]),np.linalg.norm(gRe_prime[:,2]))
-                    homog_matrixes = np.concatenate((np.concatenate((gRe_prime,np.transpose([[0,0,0]])),axis=1),np.array([[0,0,0,1]])))
-                    print("homogeneous_matrix",homog_matrixes)
-                    des_quat = t_.quaternion_from_matrix(homog_matrixes)
-                    print("Quaternion", des_quat)
-
-                    self.ee_pose.orientation.x= des_quat[0]
-                    self.ee_pose.orientation.y= des_quat[1]
-                    self.ee_pose.orientation.z= des_quat[2]
-                    self.ee_pose.orientation.w= des_quat[3]
+#                    #Follow Jared Instructions
+#                    n_ = np.multiply(np.array([flower_.vec.vector.x, flower_.vec.vector.y, flower_.vec.vector.z]),-1)
+#                    print("n_vector:",n_)
+#                    _,quat = self.get_transform_end_effector_to_global()
+#                    gRe = t_.quaternion_matrix(quat)[0:3,0:3]
+#                    print("gRe:",gRe)
+#                    q_ = np.multiply(gRe,np.transpose([0,0,1]))[0:3,2]
+#                    print("q_vector:",q_)
+#
+#                    u_ = np.multiply(np.dot(np.copy(n_),np.copy(q_)),np.copy(n_))/np.linalg.norm(np.multiply(np.dot(np.copy(n_),np.copy(q_)),np.copy(n_)))
+#                    print("u_:",u_)
+#                    v_ = (np.copy(q_)-np.multiply(np.dot(np.copy(n_),np.copy(q_)),np.copy(n_)))/np.linalg.norm((np.copy(q_)-np.multiply(np.dot(np.copy(n_),np.copy(q_)),np.copy(n_))))
+#                    print("v_:",v_)
+#                    w_ = np.cross(np.copy(q_),np.copy(n_))/np.linalg.norm(np.cross(np.copy(q_),np.copy(n_)))
+#                    print("w_:",w_)
+#                    print("u v w normal:", np.linalg.norm(u_),np.linalg.norm(v_),np.linalg.norm(w_))
+#
+#                    F = (np.concatenate(([np.transpose(u_)],[np.transpose(v_)],[np.transpose(w_)])))  #[u,v,w]^-1
+#                    print("F_:",F)
+#
+#
+#                    G = np.array([[np.dot(n_,q_),-1*np.linalg.norm(np.cross(q_,n_)),0],[np.linalg.norm(np.cross(q_,n_)),np.dot(n_,q_),0],[0,0,1]])
+#                    print("G", G)
+#                    if n_[2]>0:
+#                        temp1_ = np.matmul(np.copy(np.linalg.inv(G)),np.copy(F))
+#                        print("Temp(g is inverse)",temp1_)
+#                        eRe_prime=np.matmul(np.linalg.inv(F),temp1_)
+#                        print("eRe_prime",eRe_prime)
+#                    else:
+#                        temp1_ = np.matmul(np.copy(G),np.copy(F))
+#                        print("Temp",temp1_)
+#                        eRe_prime=np.matmul(np.linalg.inv(F),temp1_)
+#                        print("eRe_prime",eRe_prime)
+#                    gRe_prime=np.matmul(np.copy(eRe_prime),np.copy(gRe))
+#                    print("gRe_prime': ",gRe_prime)
+#                    print("gRe_prime_Normal", np.linalg.norm(gRe_prime[:,0]),np.linalg.norm(gRe_prime[:,1]),np.linalg.norm(gRe_prime[:,2]))
+#                    homog_matrixes = np.concatenate((np.concatenate((gRe_prime,np.transpose([[0,0,0]])),axis=1),np.array([[0,0,0,1]])))
+#                    print("homogeneous_matrix",homog_matrixes)
+#                    des_quat = t_.quaternion_from_matrix(homog_matrixes)
+#                    print("Quaternion", des_quat)
+#
+#                    self.ee_pose.orientation.x= des_quat[0]
+#                    self.ee_pose.orientation.y= des_quat[1]
+#                    self.ee_pose.orientation.z= des_quat[2]
+#                    self.ee_pose.orientation.w= des_quat[3]
+#                    self.ee_desired_poses.append(self.ee_pose)
+                    self.ee_pose.orientation.x= -0.5
+                    self.ee_pose.orientation.y= -0.5
+                    self.ee_pose.orientation.z=  0.5
+                    self.ee_pose.orientation.w= -0.5
                     self.ee_desired_poses.append(self.ee_pose)
-                    print(ee_pose)
-        self.test_pose = rospy.Publisher("/test_pose", PoseArray, queue_size=1)
-        self.test_pose_message = PoseArray()
-        self.test_pose_message.header.frame_id = "j2n6s300_link_base"
-        self.test_pose_message.poses = self.ee_desired_poses
-        print("TEST POSE: ",self.test_pose_message)
-        self.test_pose.publish(self.test_pose_message)
+#                    print(ee_pose)
+
+
         rospy.sleep(1)
 
     def get_transform_end_effector_to_global(self):

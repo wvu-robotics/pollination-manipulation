@@ -21,33 +21,29 @@ Classification::Classification()
 bool Classification::classifyImage(manipulation_vision::ClassifyFlowers::Request  &req,
                                    manipulation_vision::ClassifyFlowers::Response &res)
 {
-  // Paths for image output and executable location
-  std::string outputPath;
-  std::string execPath;
-
-  // Set command to add executable location to python path
-  execPath = ros::package::getPath("manipulation_vision") + "/src/";
-  std::string execCommand = "sys.path.append('" + execPath + "')";
-  const char* pyExecCommand = execCommand.c_str();
-  
+  std::string path;
+  // std::string package_path;
+  // std::string contour_path;
   for(int i=0; i<req.numberOfSegments; i++)
   {
-    outputPath += ros::package::getPath("manipulation_vision") + "/output/contour" + std::to_string(i) + ".png;";
+    path += ros::package::getPath("manipulation_vision") + "/output/contour" + std::to_string(i) + ".png;";
+    // contour_path += ros::package::getPath("vision_arm") + "/output/contour" + std::to_string(i) + ".png;";
   }
 
-  const char* picpath = outputPath.c_str();
+  const char* picpath = path.c_str();
   Py_Initialize();
   if ( !Py_IsInitialized() ) {
       return -1;
   }
   PyRun_SimpleString("import sys");
-  PyRun_SimpleString(pyExecCommand);
+  std::string temp = "sys.path.append('" + ros::package::getPath("manipulation_vision") + "/src/')";
+  PyRun_SimpleString(temp.c_str());
   PyObject* pMod = NULL;
   PyObject* pFunc = NULL;
   PyObject* pParm = NULL;
   PyObject* pRetVal = NULL;
   char* iRetVal;
-  const char* modulName="classify";    //this is the name of the called py file module
+  const char* modulName="classify";    //这个是被调用的py文件模块名字
   pMod = PyImport_ImportModule(modulName);
   if(!pMod)
   {
@@ -55,7 +51,7 @@ bool Classification::classifyImage(manipulation_vision::ClassifyFlowers::Request
       PyErr_Print();
       return -1;
   }
-  const char* funcName="evaluate_multipleString";  //this is the name of the function called in this py file module
+  const char* funcName="evaluate_multipleString";  //这是此py文件模块中被调用的函数名字
   //const char* funcName="evaluate_singleString";
   pFunc = PyObject_GetAttrString(pMod, funcName);
   if(!pFunc)
@@ -64,9 +60,9 @@ bool Classification::classifyImage(manipulation_vision::ClassifyFlowers::Request
       return -2;
   }
   pParm = PyTuple_New(1);
-  PyTuple_SetItem(pParm, 0, Py_BuildValue("s",picpath));//the incoming parameter is the path of the picture
-  pRetVal = PyEval_CallObject(pFunc, pParm);//execute the py script here
-  PyArg_Parse(pRetVal, "s", &iRetVal);//py script returns value to iRetVal
+  PyTuple_SetItem(pParm, 0, Py_BuildValue("s",picpath));//传入的参数，是图片的路径
+  pRetVal = PyEval_CallObject(pFunc, pParm);//这里开始执行py脚本
+  PyArg_Parse(pRetVal, "s", &iRetVal);//py脚本返回值给iRetVal
   std::cout<< "image classification result:\n"; // 0 refers to flower, 1 refers to non-flower
   std::cout<< iRetVal << "\n";
 
@@ -91,7 +87,7 @@ bool Classification::classifyImage(manipulation_vision::ClassifyFlowers::Request
       end = s.find(delim, start);
   }
   //std::cout << s.substr(start, end);
-	std::cout<< "classification ended \n";
+
   res.success = true;
 
   return true;
@@ -106,12 +102,13 @@ bool Classification::classifyPose(manipulation_vision::ClassifyPose::Request  &r
 {
 
   std::string filepath = ros::package::getPath("manipulation_vision") + "/output/contour" + std::to_string(req.flowerIndex) + ".png;";
+  //std::cout << "filepath = " << filepath << std::endl;
 
-
-  // Set command to add executable location to python path
-  std::string execPath = ros::package::getPath("manipulation_vision") + "/src/";
-  std::string execCommand = "sys.path.append('" + execPath + "')";
-  const char* pyExecCommand = execCommand.c_str();
+  /*std::string path;
+  for(int i=0; i<req.flowerIndex; i++)
+  {
+    path += ros::package::getPath("manipulation_vision") + "/output/contour" + std::to_string(i) + ".png;";
+  }*/
 
   const char* picpathPose = filepath.c_str();
   Py_Initialize();
@@ -119,7 +116,8 @@ bool Classification::classifyPose(manipulation_vision::ClassifyPose::Request  &r
       return -1;
   }
   PyRun_SimpleString("import sys");
-  PyRun_SimpleString(pyExecCommand);
+  std::string temp = "sys.path.append('"+ ros::package::getPath("manipulation_vision") +  + "/src/')";
+  PyRun_SimpleString(temp.c_str());
   PyObject* pModPose = NULL;
   PyObject* pFuncPose = NULL;
   PyObject* pParmPose = NULL;
@@ -168,7 +166,7 @@ bool Classification::classifyPose(manipulation_vision::ClassifyPose::Request  &r
       end = s.find(delim, start);
   }
   //std::cout << s.substr(start, end);
-std::cout<< "classification pose ended \n";
+
   res.success = true;
 
   return true;

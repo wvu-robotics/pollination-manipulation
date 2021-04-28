@@ -5,14 +5,16 @@
 Once fully functional, launch the following, in the following order:
 
 ```
-roslaunch kinova_gazebo robot_launch.launch
-roslaunch j2n6s300_moveit_config j2n6s300_gazebo_demo.launch
+
+roslaunch kinova_bringup kinova_robot.launch kinova_robotType:=j2n6s300 use_urdf:=true ## launch the robot and the realsense camera
+roslaunch j2n6s300_moveit_config bramblebee_arm.launch
 roslaunch manipulation_mapping flower_mapper.launch
-rosrun manipulation_mapping pre_pose_mapping_ros.py
-rosrun manipulation_state_machine planning_ga_ros
 rosrun manipulation_control ee_go_to_pose_action_node
-rosrun manipulation_state_machine final_previsit_poses_action_node
+rosrun manipulation_mapping pre_pose_mapping_ros.py
+rosrun manipulation_state_machine planning_ga_ros.py
 rosrun manipulation_state_machine state_machine_pollinating.py
+rosrun manipulation_state_machine visual_servoing_action_server.py 
+rosrun manipulation_pollinator pollinator_control_node
 ```
 
 Run on a new system to generate lookup table for segmentation service:

@@ -87,49 +87,35 @@ include_directories(
 	${kinova_driver_INCLUDE_DIRS}
 	${PYTHON_INCLUDE_DIRS}
 	/usr/include/python2.7/
-	${OpenCV_INCLUDE_DIRS} # ROS's OpenCV
-        /usr/local/include/opencv2 # Core OpenCV and extra modules
 )
 
 include_directories(SYSTEM ${Boost_INCLUDE_DIR} ${EIGEN_INCLUDE_DIRS})
 
 ## Declare a C++ library
 add_library(segmentation src/segmentation.cpp)
-add_dependencies(segmentation manipulation_vision_generate_messages_cpp ${segmentation_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
 target_link_libraries(segmentation ${catkin_LIBRARIES}
-	${OpenCV_LIBRARIES}
-	${OpenCV_LIBS} 
-	 /usr/local/lib
+	${OpenCV_LIBS}
 )
 
 add_library(classification src/classification.cpp)
-add_dependencies(classification manipulation_vision_generate_messages_cpp ${classification_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
 target_link_libraries(classification ${catkin_LIBRARIES}
-	${OpenCV_LIBRARIES}
-	${OpenCV_LIBS} 
-	 /usr/local/lib
+	${OpenCV_LIBS}
 	${PYTHON_LIBRARIES}
 )
 
 add_library(search src/search.cpp)
-add_dependencies(search ${search_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
 target_link_libraries(search ${catkin_LIBRARIES}
-	${OpenCV_LIBRARIES}
-	${OpenCV_LIBS} 
-	 /usr/local/lib
+	${OpenCV_LIBS}
 	segmentation
 	classification
 )
 
-add_library(approach_flower_action src/approach_flower_action.cpp)
-target_link_libraries(approach_flower_action
-	${catkin_LIBRARIES}
-	${Boost_LIBRARIES}
-	${kinova_driver_LIBRARIES}
-)
+#add_library(approach_flower_action src/approach_flower_action.cpp)
+#target_link_libraries(approach_flower_action
+#	${catkin_LIBRARIES}
+#	${Boost_LIBRARIES}
+#	${kinova_driver_LIBRARIES}
+#)
 
 ## Declare a C++ executable
 add_executable(generate_lookup src/generate_lookup.cpp)
@@ -159,22 +145,22 @@ target_link_libraries(classification_node
 	classification
 )
 
-add_executable(approach_flower_action_node src/approach_flower_action_node.cpp)
-target_link_libraries(approach_flower_action_node
-	${catkin_LIBRARIES}
-	approach_flower_action
-)
+#add_executable(approach_flower_action_node src/approach_flower_action_node.cpp)
+#target_link_libraries(approach_flower_action_node
+#	${catkin_LIBRARIES}
+#	approach_flower_action
+#)
 
-add_executable(test_approach_flower src/test_approach_flower.cpp)
-target_link_libraries(test_approach_flower
-	${catkin_LIBRARIES}
-	approach_flower_action
-)
+#add_executable(test_approach_flower src/test_approach_flower.cpp)
+#target_link_libraries(test_approach_flower
+#	${catkin_LIBRARIES}
+#	approach_flower_action
+#)
 
-add_executable(test_pose_flower_node src/test_pose_flower_node.cpp)
-target_link_libraries(test_pose_flower_node
-	${catkin_LIBRARIES}
-)
+#add_executable(test_pose_flower_node src/test_pose_flower_node.cpp)
+#target_link_libraries(test_pose_flower_node
+#	${catkin_LIBRARIES}
+#)
 
 add_executable(search_node src/search_node.cpp)
 add_dependencies(search_node manipulation_vision_generate_messages_cpp)
@@ -187,7 +173,5 @@ add_executable(depthcallback_test src/depthcallback_test.cpp)
 add_dependencies(depthcallback_test manipulation_vision_generate_messages_cpp)
 target_link_libraries(depthcallback_test
 	${catkin_LIBRARIES}
-	${OpenCV_LIBRARIES}
-	${OpenCV_LIBS} 
-	 /usr/local/lib
+	${OpenCV_LIBS}
 )

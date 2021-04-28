@@ -1,7 +1,8 @@
 # Approach Flower Action
 
 # goal definition
-int16 flower_id
+geometry_msgs/Pose flower_pose
+geometry_msgs/Vector3Stamped flower_vector
 ---
 # result definition
 bool flower_approached

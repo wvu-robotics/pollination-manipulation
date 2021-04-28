@@ -49,6 +49,7 @@
 #include <pcl_ros/transforms.h>
 #include <pcl/PCLPointCloud2.h>
 #include <pcl/common/centroid.h>
+#include <pcl/registration/icp.h>
 #include <pcl/sample_consensus/lmeds.h>
 #include <pcl/sample_consensus/mlesac.h>
 #include <pcl/sample_consensus/ransac.h>
@@ -97,8 +98,8 @@ ros::ServiceServer constructFlowerMapServ;
 
 // {flower_index, graph_key, factor graph, optimized values, number of times observed, accumulated prob. of flower, point cloud}
 typedef std::vector< std::tuple<unsigned int, int, gtsam::NonlinearFactorGraph, gtsam::Values, unsigned int, double, sensor_msgs::PointCloud2> > factor_graphs;
-// {flower_index,  flower_pose}
-typedef std::vector< std::tuple<unsigned int, gtsam::Point3, gtsam::Point3> >flower_map;
+// {flower_index,  flower_position, flower_normal}
+typedef std::vector< std::tuple<unsigned int, gtsam::Point3, gtsam::Point3, PointCloud<PointXYZ>::Ptr> >flower_map;
 
 
 private:
@@ -107,6 +108,7 @@ factor_graphs graphs_;
 flower_map map_;
 tf::TransformListener tf_listener_pc_;       /**< Transform listener that subscribes to ROS transform messages. Used for transforming point cloud to global coordinates */
 tf::TransformListener tf_listener_pose_;       /**< Transform listener that subscribes to ROS transform messages. Used for transforming point cloud to global coordinates */
+PointCloud<PointXYZ>::Ptr cloud_;
 gtsam::Point3 normal_;
 
 

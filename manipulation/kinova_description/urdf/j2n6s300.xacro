@@ -115,8 +115,9 @@
     <!-- <property name="joint_end_effector_origin_rpy" value="0 0 -2.09439532679" /> -->
     <!-- <property name="joint_end_effector_origin_rpy" value="0.0236 0.0409 -1.0137" /> -->
     <!-- <property name="joint_end_effector_origin_rpy" value="-0.0123 -0.0795 -1.0017" /> -->
-    <property name="joint_end_effector_origin_rpy" value="-0.0121 0.0291 -0.9881" />
-
+    <!-- <property name="joint_end_effector_origin_rpy" value="-0.0121 0.0291 -0.9881" /> -->
+    <!-- <property name="joint_end_effector_origin_rpy" value="-0.0121 0.0291 2.0" /> -->
+    <property name="joint_end_effector_origin_rpy" value="0.0 0.0 -0.19" />
     <xacro:macro name="j2n6s300" params="base_parent prefix:=j2n6s300">
 
         <xacro:gazebo_config robot_namespace="${prefix}"/>

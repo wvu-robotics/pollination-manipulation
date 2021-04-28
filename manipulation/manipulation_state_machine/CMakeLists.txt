@@ -74,27 +74,6 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_library(find_previsit_poses_service src/find_previsit_poses_service.cpp)
-target_link_libraries(find_previsit_poses_service
-	${catkin_LIBRARIES}
-)
-
-add_executable(find_previsit_poses_node src/find_previsit_poses_node.cpp)
-target_link_libraries(find_previsit_poses_node
-	${catkin_LIBRARIES}
-	find_previsit_poses_service
-)
-
-add_library(final_previsit_pose_service src/final_previsit_pose_service.cpp)
-target_link_libraries(final_previsit_pose_service
-	${catkin_LIBRARIES}
-)
-
-add_executable(final_previsit_pose_node src/final_previsit_pose_node.cpp)
-target_link_libraries(final_previsit_pose_node
-	${catkin_LIBRARIES}
-	final_previsit_pose_service
-)
 
 ################################################################################
 # Install

@@ -71,7 +71,7 @@ update_flower_map (manipulation_common::UpdateFlowerMap::Request  &req,
 
         map_pub_ = nh.advertise<manipulation_common::FlowerMap>( "flower_map", 10, false);
         vec_pub_ = nh.advertise<visualization_msgs::MarkerArray>( "flower_vec", 10, false);
-        pts_pub_ = nh.advertise<sensor_msgs::PointCloud2>("flower_pts", 10, false);
+        pts_pub_ = nh.advertise<sensor_msgs::PointCloud2>("flower_pts", 0, false);
 
         send_flower_map(res, map_pub_);
         send_flower_vec(res, vec_pub_);
@@ -97,7 +97,6 @@ gtsam::Pose3 FlowerMapper::pose_msg_to_gtsam(const geometry_msgs::PoseStamped& p
         gtsam::Point3 point(pose.pose.position.x,
                             pose.pose.position.y,
                             pose.pose.position.z);
-	std::cout<<"point from pose msg to gtsam "<<pose.pose.position.x<<"  "<<pose.pose.position.y<<"  "<<pose.pose.position.z<<"\n";
 
         gtsam::Rot3 rot = gtsam::Rot3::quaternion( pose.pose.orientation.w,
                                                    pose.pose.orientation.x,
@@ -113,7 +112,7 @@ unsigned int FlowerMapper::get_flower_index(const gtsam::Pose3& pose_est)
         if (map_.size() == 0)
         {
                 int flower_index = ++flower_count_;
-                map_.push_back(std::make_tuple(flower_index, pose_est.translation(), normal_));
+                map_.push_back(std::make_tuple(flower_index, pose_est.translation(), normal_,cloud_));
                 return flower_index;
         }
         else
@@ -140,7 +139,7 @@ unsigned int FlowerMapper::get_flower_index(const gtsam::Pose3& pose_est)
                 }
                 // If newly observed flower, then add to map
                 unsigned int flower_index = ++flower_count_;
-                map_.push_back(std::make_tuple(flower_index, pose_est.translation(), normal_));
+                map_.push_back(std::make_tuple(flower_index, pose_est.translation(), normal_,cloud_));
                 return flower_index;
         }
 }
@@ -149,109 +148,122 @@ unsigned int FlowerMapper::get_flower_index(const gtsam::Pose3& pose_est)
 // calcuate point clouds normal vector in the world frame using plane fitting.
 gtsam::Point3 FlowerMapper::get_pc_norm_vec(sensor_msgs::PointCloud2 pc)
 {
-        srand (0);
+        // srand (0);
 
-        tf_listener_pc_.waitForTransform(world_frame,pc.header.frame_id,ros::Time(0),ros::Duration(1.0));
-        tf::StampedTransform transform;
-        tf_listener_pc_.lookupTransform(world_frame,pc.header.frame_id, ros::Time(0), transform);
-
-
-        // transform point cloud from camera to base
-        sensor_msgs::PointCloud2 pc_transformed;
-        Eigen::Matrix4f eigen_transform;
-        pcl_ros::transformAsMatrix (transform, eigen_transform);
-        pcl_ros::transformPointCloud(eigen_transform, pc, pc_transformed);
+        // tf_listener_pc_.waitForTransform(world_frame,pc.header.frame_id,ros::Time(0),ros::Duration(1.0));
+        // tf::StampedTransform transform;
+        // tf_listener_pc_.lookupTransform(world_frame,pc.header.frame_id, ros::Time(0), transform);
 
 
-        PointCloud<PointXYZ>::Ptr cloud_ (new PointCloud<PointXYZ> ());
-        pcl::PCLPointCloud2 pcl_pc2;
-        pcl_conversions::toPCL(pc_transformed,pcl_pc2);
-        pcl::fromPCLPointCloud2(pcl_pc2,*cloud_);
+        // // transform point cloud from camera to base
+        // sensor_msgs::PointCloud2 pc_transformed;
+        // Eigen::Matrix4f eigen_transform;
+        // pcl_ros::transformAsMatrix (transform, eigen_transform);
+        // pcl_ros::transformPointCloud(eigen_transform, pc, pc_transformed);
 
-        PointCloud<PointXYZ>::Ptr cloud_filtered_ (new PointCloud<PointXYZ> ());
-        pcl::StatisticalOutlierRemoval<pcl::PointXYZ> sor;
-        sor.setInputCloud(cloud_);
-        sor.setMeanK(50);
-        sor.setStddevMulThresh(1.0);
-        sor.filter(*cloud_filtered_);
 
-        // Create a shared plane model pointer directly
-        SampleConsensusModelPlanePtr model (new SampleConsensusModelPlane<PointXYZ> (cloud_filtered_));
-        bool result;
-        std::vector<int> inliers;
-        Eigen::VectorXf coeff;
-        switch (estimator_type)
-        {
-        case 0:
-        {
-                // LMeDs
-                // Fusiello, Andrea. "Elements of geometric computer vision." Available fro m: http://homepages. inf. ed. ac. uk/rbf/CVonline/LOCAL_COPIES/FUSIELLO4/tutorial. html (2006).
-                // See Section 7.3.3
-                LeastMedianSquares<PointXYZ> sac (model, model_distance_thresh);
-                result = sac.computeModel ();
+        // PointCloud<PointXYZ>::Ptr cloud_ (new PointCloud<PointXYZ> ());
+        // pcl::PCLPointCloud2 pcl_pc2;
+        // pcl_conversions::toPCL(pc_transformed,pcl_pc2);
+        // pcl::fromPCLPointCloud2(pcl_pc2,*cloud_);
 
-                sac.getInliers (inliers);
-                sac.getModelCoefficients (coeff);
+        // // remove outliers from point-cloud
+        // PointCloud<PointXYZ>::Ptr cloud_in_filtered (new PointCloud<PointXYZ> ());
+        // pcl::StatisticalOutlierRemoval<pcl::PointXYZ> sor;
+        // sor.setInputCloud(cloud_);
+        // sor.setMeanK(50);
+        // sor.setStddevMulThresh(1.0);
+        // sor.filter(*cloud_in_filtered);
 
-                break;
-        }
-        case 1:
-        {
-                // RRAANSAC
-                // Chum, Ondrej, and Jirı Matas. "Randomized RANSAC with Td, d test." Proc. British Machine Vision Conference. Vol. 2. 2002.
-                RandomizedRandomSampleConsensus<PointXYZ> sac (model, model_distance_thresh);
-                result = sac.computeModel ();
+        // // perform ICP to align current point-cloud to previous flower model
+        // pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
+        // int iterations = 20;
+        // icp.setMaximumIterations(iterations);
+        // icp.setInputSource(cloud_in_filtered);
+        // icp.setInputTarget(cloud_);
+        // icp.align(*cloud_in_filtered);
 
-                sac.getInliers (inliers);
-                sac.getModelCoefficients (coeff);
+        // *cloud_ += *cloud_in_filtered;
 
-                break;
-        }
-        case 2:
-        {
-                // MLESAC
-                // Torr, Philip HS, and Andrew Zisserman. "MLESAC: A new robust estimator with application to estimating image geometry." Computer vision and image understanding 78.1 (2000): 138-156.
-                MaximumLikelihoodSampleConsensus<PointXYZ> sac (model, model_distance_thresh);
-                result = sac.computeModel ();
 
-                sac.getInliers (inliers);
-                sac.getModelCoefficients (coeff);
+        // // Create a shared plane model pointer directly
+        // // SampleConsensusModelPlanePtr model (new SampleConsensusModelPlane<PointXYZ> (cloud_in_filtered));
+        // SampleConsensusModelPlanePtr model (new SampleConsensusModelPlane<PointXYZ> (cloud_));
+        // bool result;
+        // std::vector<int> inliers;
+        // Eigen::VectorXf coeff;
+        // switch (estimator_type)
+        // {
+        // case 0:
+        // {
+        //         // LMeDs
+        //         // Fusiello, Andrea. "Elements of geometric computer vision." Available fro m: http://homepages. inf. ed. ac. uk/rbf/CVonline/LOCAL_COPIES/FUSIELLO4/tutorial. html (2006).
+        //         // See Section 7.3.3
+        //         LeastMedianSquares<PointXYZ> sac (model, model_distance_thresh);
+        //         result = sac.computeModel ();
 
-                break;
-        }
-        default:
-        {
-                // LMeDs
-                // Fusiello, Andrea. "Elements of geometric computer vision." Available fro m: http://homepages. inf. ed. ac. uk/rbf/CVonline/LOCAL_COPIES/FUSIELLO4/tutorial. html (2006).
-                // See Section 7.3.3
-                LeastMedianSquares<PointXYZ> sac (model, model_distance_thresh);
-                result = sac.computeModel ();
+        //         sac.getInliers (inliers);
+        //         sac.getModelCoefficients (coeff);
 
-                sac.getInliers (inliers);
-                sac.getModelCoefficients (coeff);
+        //         break;
+        // }
+        // case 1:
+        // {
+        //         // RRAANSAC
+        //         // Chum, Ondrej, and Jirı Matas. "Randomized RANSAC with Td, d test." Proc. British Machine Vision Conference. Vol. 2. 2002.
+        //         RandomizedRandomSampleConsensus<PointXYZ> sac (model, model_distance_thresh);
+        //         result = sac.computeModel ();
 
-                break;
-        }
-        }
+        //         sac.getInliers (inliers);
+        //         sac.getModelCoefficients (coeff);
 
-        if (coeff.size() != 4)
-          return gtsam::Point3(0.0,0.0,0.0);
+        //         break;
+        // }
+        // case 2:
+        // {
+        //         // MLESAC
+        //         // Torr, Philip HS, and Andrew Zisserman. "MLESAC: A new robust estimator with application to estimating image geometry." Computer vision and image understanding 78.1 (2000): 138-156.
+        //         MaximumLikelihoodSampleConsensus<PointXYZ> sac (model, model_distance_thresh);
+        //         result = sac.computeModel ();
 
-        Eigen::VectorXf coeff_refined;
-        model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
-        coeff_refined(2) = -1.0*coeff_refined(2);
+        //         sac.getInliers (inliers);
+        //         sac.getModelCoefficients (coeff);
 
-        Eigen::Vector3d plane_normal = (Eigen::Vector3d() << coeff_refined(0), coeff_refined(1), coeff_refined(2)).finished();
+        //         break;
+        // }
+        // default:
+        // {
+        //         // LMeDs
+        //         // Fusiello, Andrea. "Elements of geometric computer vision." Available fro m: http://homepages. inf. ed. ac. uk/rbf/CVonline/LOCAL_COPIES/FUSIELLO4/tutorial. html (2006).
+        //         // See Section 7.3.3
+        //         LeastMedianSquares<PointXYZ> sac (model, model_distance_thresh);
+        //         result = sac.computeModel ();
 
-        Eigen::Vector4d centroid;
-        compute3DCentroid(*cloud_, centroid);
+        //         sac.getInliers (inliers);
+        //         sac.getModelCoefficients (coeff);
 
-        // Verify direction of normal vec (i.e., always point norm vec away from camera)
-        Eigen::Vector3d camera_normal = (centroid.head(3)) / centroid.head(3).norm();
-        if (plane_normal.dot(camera_normal) < 0.0) { plane_normal = -1.0 * plane_normal; }
+        //         break;
+        // }
+        // }
 
-        return gtsam::Point3(plane_normal(0), plane_normal(1), plane_normal(2));
+        // if (coeff.size() != 4)
+        //   return gtsam::Point3(0.0,0.0,0.0);
 
+        // Eigen::VectorXf coeff_refined;
+        // model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
+        // coeff_refined(2) = -1.0*coeff_refined(2);
+
+        // Eigen::Vector3d plane_normal = (Eigen::Vector3d() << coeff_refined(0), coeff_refined(1), coeff_refined(2)).finished();
+
+        // Eigen::Vector4d centroid;
+        // compute3DCentroid(*cloud_, centroid);
+
+        // // Verify direction of normal vec (i.e., always point norm vec away from camera)
+        // Eigen::Vector3d camera_normal = (centroid.head(3)) / centroid.head(3).norm();
+        // if (plane_normal.dot(camera_normal) < 0.0) { plane_normal = -1.0 * plane_normal; }
+
+        // return gtsam::Point3(plane_normal(0), plane_normal(1), plane_normal(2));
+    return gtsam::Point3(0, 0, 0);
 }
 
 
@@ -262,7 +274,7 @@ void FlowerMapper::update_graph(const unsigned int& flower_index, const gtsam::P
 
         auto graph_iter = std::find_if(graphs_.begin(), graphs_.end(), [flower_index] (const std::tuple<unsigned int, int, gtsam::NonlinearFactorGraph, gtsam::Values, unsigned int, double, sensor_msgs::PointCloud2>&g) {return std::get<0>(g) == flower_index; });
 
-        auto map_iter = std::find_if(map_.begin(), map_.end(), [flower_index] (const std::tuple<unsigned int, gtsam::Point3, gtsam::Point3>&g) {return std::get<0>(g) == flower_index; });
+        auto map_iter = std::find_if(map_.begin(), map_.end(), [flower_index] (const std::tuple<unsigned int, gtsam::Point3, gtsam::Point3, PointCloud<PointXYZ>::Ptr>&g) {return std::get<0>(g) == flower_index; });
 
 
         if ( graph_iter == graphs_.end() )
@@ -312,7 +324,7 @@ void FlowerMapper::update_graph(const unsigned int& flower_index, const gtsam::P
                 std::get<5>(*graph_iter)*=flower_prob;
                 if ( map_iter == map_.end() )
                 {
-                        map_.push_back(std::make_tuple(flower_index, pose_est.translation(), normal_));
+                        map_.push_back(std::make_tuple(flower_index, pose_est.translation(), normal_,cloud_));
                 }
                 else
                 {
@@ -352,14 +364,14 @@ void FlowerMapper::send_flower_map(manipulation_common::UpdateFlowerMap::Respons
                         flower.prob = std::get<5>(*graph_iter);
 
 
-                        // Position 
+                        // Position
                         flower.point.header.frame_id = world_frame;
                         flower.point.header.stamp = timestamp;
                         flower.point.point.x = position[0];
                         flower.point.point.y = position[1];
                         flower.point.point.z = position[2];
 
-                        // Unit Vector added *10 Trevor
+                        // Unit Vector
                         flower.vec.header.frame_id = world_frame;
                         flower.vec.header.stamp = timestamp;
                         flower.vec.vector.x = normalVec[0];
@@ -460,14 +472,14 @@ void FlowerMapper::send_flower_vec(manipulation_common::UpdateFlowerMap::Respons
                         flower.num_obs = std::get<4>(*graph_iter);
                         flower.prob = std::get<5>(*graph_iter);
 
-                        // Position added
+                        // Position
                         flower.point.header.frame_id = world_frame;
                         flower.point.header.stamp = timestamp;
                         flower.point.point.x = position[0];
                         flower.point.point.y = position[1];
                         flower.point.point.z = position[2];
 
-                        // Unit Vector added
+                        // Unit Vector
                         flower.vec.header.frame_id = world_frame;
                         flower.vec.header.stamp = timestamp;
                         flower.vec.vector.x = normalVec[0];
