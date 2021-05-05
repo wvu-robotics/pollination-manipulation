@@ -31,12 +31,12 @@ class ApproachFlower:
         rospy.on_shutdown(self.shutdown)
         rospy.loginfo("Approach Flower Node Initialized")
 
-        self.server = actionlib.SimpleActionServer('/approach_flower', ApproachFlowerAction, self.visual_servoing_handle, False)
+        self.server = actionlib.SimpleActionServer('/approach_flower', ApproachFlowerAction, self.approach_handle, False)
         self.result = ApproachFlowerResult()
         self.server.start()
         rospy.spin()
 
-    def visual_servoing_handle(self, goal):
+    def approach_handle(self, goal):
 
         rospy.loginfo("Approach Flower procedure started Started")
 
@@ -44,11 +44,11 @@ class ApproachFlower:
         # Process the goal to the Flower
         pos_flower = np.array([goal.flower_pose.position.x, goal.flower_pose.position.y, goal.flower_pose.position.z])
         #new_offset = np.multiply(np.array([0.13,0.13,0.13]),np.array([goal.flower_vector.vector.x,goal.flower_vector.vector.y,goal.flower_vector.vector.z]))
-        new_offset = np.array([0.13,0.13,0.13])
-        des_pos = pos_flower+new_offset
+        #new_offset = np.array([0.13,0.13,0.13])
+        des_pos = pos_flower#+new_offset
         _send_goal = PoseStamped()
         _send_goal.pose.position.x= des_pos[0]+0.035
-        _send_goal.pose.position.y= des_pos[1]+0.067
+        _send_goal.pose.position.y= des_pos[1]-0.1367
         _send_goal.pose.position.z= des_pos[2]+0.098
         _send_goal.pose.orientation = goal.flower_pose.orientation
 

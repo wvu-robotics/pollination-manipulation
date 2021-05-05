@@ -260,9 +260,9 @@ class Planning_Flower_Sequence:
         #des_quat = t_.quaternion_from_matrix(des_rot)
     #    offset = np.multiply(np.array([-0.2,-0.2,-0.2]),np.array([des_rot[2][0],des_rot[2][1],des_rot[2][2]]))
         des_pos = pos_flower+new_offset
-        self.ee_pose.position.x= des_pos[0]
+        self.ee_pose.position.x= -des_pos[0]
         self.ee_pose.position.y= des_pos[1]
-        self.ee_pose.position.z= des_pos[2]
+        self.ee_pose.position.z= des_pos[2]+0.05
 
         #Follow Jared Instructions
         # n_ = np.multiply(np.array([flower_.vec.vector.x, flower_.vec.vector.y, flower_.vec.vector.z]),-1)
@@ -322,9 +322,9 @@ class Planning_Flower_Sequence:
                     des_pos = np.copy(pos_flower)+np.copy(new_offset)
                     print("Desired Pose", des_pos)
 
-                    self.ee_pose.position.x= des_pos[0]
+                    self.ee_pose.position.x= -des_pos[0]
                     self.ee_pose.position.y= des_pos[1]
-                    self.ee_pose.position.z= des_pos[2]
+                    self.ee_pose.position.z= des_pos[2]+0.05
 
 #                    #Follow Jared Instructions
 #                    n_ = np.multiply(np.array([flower_.vec.vector.x, flower_.vec.vector.y, flower_.vec.vector.z]),-1)

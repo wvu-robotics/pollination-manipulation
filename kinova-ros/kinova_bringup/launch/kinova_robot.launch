@@ -19,13 +19,6 @@
     <param name="status_interval_seconds" value="$(arg feedback_publish_rate)" />
   </node>
     
-  <group unless="$(arg use_urdf)">
-    <node name="$(arg kinova_robotName)_tf_updater" pkg="kinova_driver" type="kinova_tf_updater" output="screen" cwd="node" args="$(arg kinova_robotType)">
-      <remap from="/$(arg kinova_robotName)_tf_updater/in/joint_angles" to="/$(arg kinova_robotName)_driver/out/joint_angles"/>
-      <param name="base_frame" value="root"/>
-    </node>
-  </group>
-
   <group if="$(arg use_urdf)">
     <param name="robot_description" command="$(find xacro)/xacro.py '$(find kinova_description)/urdf/$(arg kinova_robotType)_standalone.xacro'" />
     <node name="$(arg kinova_robotName)_state_publisher"

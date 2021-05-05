@@ -15,12 +15,15 @@ from std_msgs.msg import Bool
 from std_msgs.msg import Int16
 from std_msgs.msg import Int32
 from std_msgs.msg import String
+from std_msgs.msg import ColorRGBA
 from geometry_msgs.msg import PoseArray
 from geometry_msgs.msg import PoseStamped
 from geometry_msgs.msg import Pose
 from geometry_msgs.msg import Vector3Stamped
 from manipulation_common.msg import FlowerMap
 from manipulation_common.msg import Flower
+
+from visualization_msgs.msg import Marker
 
 
 from tf import transformations as t
@@ -116,6 +119,25 @@ class Pollination_manipulation:
         print(self.flowers_with_offset[self.number_flowers_pollinated])
         self.current_flower = self.flowers_with_offset[self.number_flowers_pollinated]
 
+
+        #Visualization tools:
+        marker_pub = rospy.Publisher("marker_flower_state_machine", Marker)
+        marker = Marker()
+        marker.header.frame_id = "j2n6s300_link_base"
+        marker.type = 2
+        marker.action = 0
+        color = ColorRGBA()
+        color.r = 1.0
+        color.g = 0.0
+        color.b = 0.0
+        color.a = 1.0
+        marker.color = color
+        marker.pose.position = self.current_flower.position
+        marker.scale.x = 0.02
+        marker.scale.y = 0.02
+        marker.scale.z = 0.02
+        marker_pub.publish(marker)
+
         _send_goal = PoseStamped()
         _send_goal.pose = self.current_flower
         _control_client.wait_for_server()
@@ -125,7 +147,7 @@ class Pollination_manipulation:
         _control_result=_control_client.get_result()
         self.search_for_flowers()
         if _control_result.goal_reached==True:
-            self.visual_servoing(flower_vector)
+            self.approach(flower_vector)
         else:
             self.flowers_not_pollinated_due_error.append(self.flowers_order[self.number_flowers_pollinated])
             self.number_flowers_pollinated = self.number_flowers_pollinated +1
@@ -147,19 +169,18 @@ class Pollination_manipulation:
         #Add some exception
         return
 
-    def visual_servoing(self,flowervector):
-        rospy.loginfo("Visual_servoing")
-        rospy.loginfo("Visual Servoing Flower: %d",self.flowers_order[self.number_flowers_pollinated])
-        _visual_servoing_client = actionlib.SimpleActionClient('approach_flower', ApproachFlowerAction)
-        _visual_servoing_client.wait_for_server()
+    def approach(self,flowervector):
+        rospy.loginfo("Approach Flower: %d",self.flowers_order[self.number_flowers_pollinated])
+        _approach_client = actionlib.SimpleActionClient('approach_flower', ApproachFlowerAction)
+        _approach_client.wait_for_server()
         print(self.flowers_order[self.number_flowers_pollinated])
-        _visual_servoing_goal = ApproachFlowerGoal(flower_pose=self.current_flower,flower_vector = flowervector)
-        _visual_servoing_client.send_goal(_visual_servoing_goal)
+        _approach_goal = ApproachFlowerGoal(flower_pose=self.current_flower,flower_vector = flowervector)
+        _approach_client.send_goal(_approach_goal)
         rospy.sleep(1)
-        _visual_servoing_client.wait_for_result()
-        _visual_servoing_result=_visual_servoing_client.get_result().flower_approached
-        rospy.loginfo("Visual servoing result: %r", _visual_servoing_result)
-        if _visual_servoing_result==True:
+        _approach_client.wait_for_result()
+        _approach_result=_approach_client.get_result().flower_approached
+        rospy.loginfo("Visual servoing result: %r", _approach_result)
+        if _approach_result==True:
             self.pollinating()
         else:
             self.logerr("Visual Servoing was not completed")
