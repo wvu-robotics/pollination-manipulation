@@ -183,7 +183,7 @@ class Pollination_manipulation:
         if _approach_result==True:
             self.pollinating()
         else:
-            self.logerr("Visual Servoing was not completed")
+            rospy.logerr("Visual Servoing was not completed")
             self.individual_flower_pollination_procedure()
         return
 
