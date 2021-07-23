@@ -82,7 +82,7 @@ bool Search::search(manipulation_common::SearchForFlowers::Request  &req,
   //load depth image from topic
   sensor_msgs::Image::ConstPtr msg_depth_ptr =
   ros::topic::waitForMessage<sensor_msgs::Image>
-  ("/camera/aligned_depth_to_color/image_raw", ros::Duration(1));
+  ("/camera/depth/image_raw", ros::Duration(1));
 
   if(msg_depth_ptr == NULL)
   {
@@ -98,7 +98,7 @@ bool Search::search(manipulation_common::SearchForFlowers::Request  &req,
   //load depth info
   sensor_msgs::CameraInfo::ConstPtr msg_depth_info_ptr =
   ros::topic::waitForMessage<sensor_msgs::CameraInfo>
-  ("/camera/aligned_depth_to_color/camera_info", ros::Duration(1));
+  ("/camera/depth/camera_info", ros::Duration(1));
 
   if(msg_depth_info_ptr == NULL)
   {
@@ -346,7 +346,7 @@ bool Search::searchFF(manipulation_common::SearchForFlowers::Request  &req,
 
   //load rgb and depth
   _load_rgb("/camera/color");
-  _load_depth("/camera/aligned_depth_to_color");
+  _load_depth("/camera/depth");
 
   //depth constraint (ignore points far aware)
   depth_constraint(_rgb, _depth);
@@ -690,27 +690,42 @@ bool Search::_distance_constraint_satisfied (geometry_msgs::PoseStamped pose)
  */
 bool Search::republish()
 {
-  ros::Publisher pub_depth_info = nh.advertise<sensor_msgs::CameraInfo>("/data/camera/aligned_depth_to_color/camera_info", 1);
+  ros::Publisher pub_depth_info = nh.advertise<sensor_msgs::CameraInfo>("/data/camera/depth/camera_info", 1);
   ros::Publisher pub_color_info = nh.advertise<sensor_msgs::CameraInfo>("/data/camera/color/camera_info", 1);
-  ros::Publisher pub_depth_img = nh.advertise<sensor_msgs::Image>("/data/camera/aligned_depth_to_color/image_raw", 1);
+  ros::Publisher pub_depth_img = nh.advertise<sensor_msgs::Image>("/data/camera/depth/image_raw", 1);
   ros::Publisher pub_color_img = nh.advertise<sensor_msgs::Image>("/data/camera/color/image_raw", 1);
   ros::Publisher pub_cloud = nh.advertise<pcl::PCLPointCloud2>("/data/camera/depth/color/points", 1);
   ros::Publisher pub_tf = nh.advertise<tf2_msgs::TFMessage>("/data/tf", 1);
   ros::Publisher pub_tf_static = nh.advertise<tf2_msgs::TFMessage>("/data/tf_static", 1);
+  ROS_INFO("Repub advertising successful!");
 
-  sensor_msgs::Image::ConstPtr msg_depth_ptr = ros::topic::waitForMessage<sensor_msgs::Image>("/camera/aligned_depth_to_color/image_raw", ros::Duration(1));
+
+  sensor_msgs::Image::ConstPtr msg_depth_ptr = ros::topic::waitForMessage<sensor_msgs::Image>("/camera/depth/image_raw", ros::Duration(1));
   sensor_msgs::Image::ConstPtr msg_color_ptr = ros::topic::waitForMessage<sensor_msgs::Image>("/camera/color/image_raw", ros::Duration(1));
-  sensor_msgs::CameraInfo::ConstPtr msg_depth_info_ptr = ros::topic::waitForMessage<sensor_msgs::CameraInfo>("/camera/aligned_depth_to_color/camera_info", ros::Duration(1));
+  sensor_msgs::CameraInfo::ConstPtr msg_depth_info_ptr = ros::topic::waitForMessage<sensor_msgs::CameraInfo>("/camera/depth/camera_info", ros::Duration(1));
   sensor_msgs::CameraInfo::ConstPtr msg_color_info_ptr = ros::topic::waitForMessage<sensor_msgs::CameraInfo>("/camera/color/camera_info", ros::Duration(1));
   pcl::PCLPointCloud2::ConstPtr msg_cloud_ptr = ros::topic::waitForMessage<pcl::PCLPointCloud2> ("/camera/depth/color/points", ros::Duration(1));
   tf2_msgs::TFMessage::ConstPtr msg_tf = ros::topic::waitForMessage<tf2_msgs::TFMessage> ("/tf", ros::Duration(1));
   tf2_msgs::TFMessage::ConstPtr msg_tf_static = ros::topic::waitForMessage<tf2_msgs::TFMessage> ("/tf_static", ros::Duration(1));
+  ROS_INFO("Repub pointer initialization successful!");
+
 
   pub_depth_img.publish(msg_depth_ptr);
+  ROS_INFO("Repub depth pointer publication successful!");
+
   pub_color_img.publish(msg_color_ptr);
+    ROS_INFO("Repub color pointer publication successful!");
+
+//currently failing here
   pub_depth_info.publish(msg_depth_info_ptr);
+      ROS_INFO("Repub depth info pointer publication successful!");
+
   pub_color_info.publish(msg_color_info_ptr);
+    ROS_INFO("Repub color info pointer publication successful!");
+
   pub_cloud.publish(msg_cloud_ptr);
+    ROS_INFO("Repub cloud pointer publication successful!");
+
   pub_tf.publish(msg_tf);
   pub_tf_static.publish(msg_tf_static);
 }

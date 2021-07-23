@@ -1,5 +1,5 @@
 <launch>
-  <param name="/use_sim_time" value="false"/>
+  <param name="/use_sim_time" value="true"/>
 
   <group ns="flower_mapper">
     <node pkg="manipulation_mapping"

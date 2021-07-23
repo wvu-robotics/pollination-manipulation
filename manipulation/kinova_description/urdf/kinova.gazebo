@@ -37,7 +37,7 @@
           <cameraName>camera</cameraName>
           <imageTopicName>/camera/color/image_raw</imageTopicName>
           <cameraInfoTopicName>/camera/color/camera_info</cameraInfoTopicName>
-          <depthImageTopicName>/camera/aligned_depth_to_color/image_raw</depthImageTopicName>
+          <depthImageTopicName>/camera/depth/image_raw</depthImageTopicName>
           <depthImageInfoTopicName>/camera/depth/camera_info</depthImageInfoTopicName>
           <pointCloudTopicName>/camera/depth/color/points</pointCloudTopicName>
           <frameName>j2n6s300_end_effector</frameName>
