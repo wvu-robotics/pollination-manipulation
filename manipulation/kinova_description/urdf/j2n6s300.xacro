@@ -29,7 +29,7 @@
     <property name="link_5_mesh" value="wrist" />
 
     <!-- Custom Parts -->
-    <property name="link_6_mesh" value="custom_end_effector_v2_2" />
+    <property name="link_6_mesh" value="end_effector_v3_recentered" />
 
     <!--Used for conditional arguments for setting inertial parameters
         base 0, shoulder 1, arm 2, forearm 3, wrist 4, arm_mico 5,
