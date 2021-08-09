@@ -6,7 +6,7 @@ add_compile_options(-std=c++11)
 find_package(catkin REQUIRED COMPONENTS
   actionlib_msgs
   actionlib
-  aruco_markers
+  # aruco_markers
   cmake_modules
   geometric_shapes
   kinova_driver
@@ -27,7 +27,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf2
   manipulation_control
   manipulation_common
-  aruco_markers
+  #aruco_markers
   manipulation_parameter_utils
 )
 

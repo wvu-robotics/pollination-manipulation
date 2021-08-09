@@ -23,7 +23,7 @@ find_package(catkin REQUIRED COMPONENTS
   moveit_ros_planning_interface
   pluginlib
   actionlib_msgs
-  aruco_markers
+  # aruco_markers
   moveit_visual_tools
   tf2
 	manipulation_control

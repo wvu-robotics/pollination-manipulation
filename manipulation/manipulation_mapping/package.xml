@@ -16,8 +16,8 @@
 
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>actionlib_msgs</build_depend>
-  <build_depend>aruco_markers</build_depend>
-  <build_depend>cmake_modules</build_depend>
+<!--   <build_depend>aruco_markers</build_depend>
+ -->  <build_depend>cmake_modules</build_depend>
   <build_depend>geometric_shapes</build_depend>
   <build_depend>kinova_driver</build_depend>
   <build_depend>message_generation</build_depend>
@@ -42,8 +42,8 @@
   <build_depend>manipulation_common</build_depend>
 
   <build_export_depend>actionlib_msgs</build_export_depend>
-  <build_export_depend>aruco_markers</build_export_depend>
-  <build_export_depend>cmake_modules</build_export_depend>
+<!--   <build_export_depend>aruco_markers</build_export_depend>
+ -->  <build_export_depend>cmake_modules</build_export_depend>
   <build_export_depend>geometric_shapes</build_export_depend>
   <build_export_depend>kinova_driver</build_export_depend>
   <build_export_depend>moveit_core</build_export_depend>
