@@ -38,7 +38,7 @@ import math
 import actionlib
 
 #to do: add octomap
-
+#OLD POSES
 #Listing useful poses for camera
 #Above right of the tree: 
 #Trans = [-.285,.268,.733]
@@ -86,6 +86,44 @@ class BuildMap:
         _pose_goal = Pose()
         
         #goal = kinova_msgs.msg.ArmJointAnglesGoal()
+
+
+
+#NEW POSITIONS 8/10/21 , all j2n6s300_link_6 in respect to j2n6s300_link_base
+# Straight on with Tree: 
+# - Translation: [-0.016, -0.248, 0.379]
+# - Rotation: in Quaternion [0.482, 0.504, -0.398, 0.596]
+#             in RPY (radian) [1.420, 1.395, 0.071]
+#             in RPY (degree) [81.351, 79.905, 4.041]
+# Top Right v1:
+# - Translation: [-0.280, 0.063, 0.826]
+# - Rotation: in Quaternion [0.546, 0.592, -0.166, 0.569]
+#             in RPY (radian) [2.180, 1.026, 1.080]
+#             in RPY (degree) [124.877, 58.764, 61.851]
+# Bottom Right:
+# - Translation: [-0.384, -0.266, 0.394]
+# - Rotation: in Quaternion [0.589, 0.381, 0.050, 0.711]
+#             in RPY (radian) [1.553, 0.504, 0.635]
+#             in RPY (degree) [88.964, 28.886, 36.408]
+#Top Left:
+# - Translation: [0.411, -0.091, 0.642]
+# - Rotation: in Quaternion [0.300, 0.778, -0.550, 0.050]
+#             in RPY (radian) [-2.013, 0.420, 2.673]
+#             in RPY (degree) [-115.328, 24.056, 153.149]
+#Bottom Left:
+# - Translation: [0.305, -0.156, 0.199]
+# - Rotation: in Quaternion [-0.286, -0.537, 0.793, 0.044]
+#             in RPY (radian) [-1.281, 0.418, 2.717]
+#             in RPY (degree) [-73.417, 23.955, 155.677]
+
+
+
+
+
+
+
+#positions 2-3 are currently fails, first
+
 
 #Initial (1
         rospy.loginfo("position 1: Top Right of Tree")
@@ -165,7 +203,7 @@ class BuildMap:
         # goal.angles.joint6= 55
         # goal.angles.joint7= 0.0
         _pose_goal.position.x = 0.168
-        _pose_goal.position.y = -0.487
+        _pose_goal.position.y = 0.487
         _pose_goal.position.z = 0.300
         _pose_goal.orientation.x = -0.076
         _pose_goal.orientation.y = 0.727
@@ -198,6 +236,8 @@ class BuildMap:
 #         #     print('        the joint angle action timed-out')
 #         #     client.cancel_all_goals()
 
+
+#too far back, behind the base
 #(5
         rospy.loginfo("position 5:Middle of Tree")
         # goal.angles.joint1= 170
@@ -208,7 +248,7 @@ class BuildMap:
         # goal.angles.joint6= -170
         # goal.angles.joint7= 0.0
         _pose_goal.position.x = 0.017
-        _pose_goal.position.y = -0.041
+        _pose_goal.position.y = 0.041
         _pose_goal.position.z = 0.549
         _pose_goal.orientation.x = -0.056
         _pose_goal.orientation.y = 0.731
