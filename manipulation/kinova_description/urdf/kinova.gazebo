@@ -13,6 +13,7 @@
     </gazebo>
 
     <!-- depth camera plugin      -->
+    <!-- double check this reference -->
     <gazebo reference="j2n6s300_link_6">
       <sensor name="j2n6s300_link_6_camera" type="depth">
         <pose>-0.05 0 .05 0.5236 -1.57 0</pose>
@@ -40,7 +41,7 @@
           <depthImageTopicName>/camera/depth/image_raw</depthImageTopicName>
           <depthImageInfoTopicName>/camera/depth/camera_info</depthImageInfoTopicName>
           <pointCloudTopicName>/camera/depth/color/points</pointCloudTopicName>
-          <frameName>j2n6s300_end_effector</frameName>
+          <frameName>j2n6s300_camera</frameName>
           <pointCloudCutoff>0.11</pointCloudCutoff>
           <pointCloudCutoffMax>10.0</pointCloudCutoffMax>
           <distortionK1>0.00000001</distortionK1>
