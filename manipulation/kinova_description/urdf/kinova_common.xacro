@@ -84,11 +84,11 @@
 				    <box size = "0.00001 0.00001 0.00001"/>
                 </geometry>
             </visual>
-            <collision>
+<!--             <collision>
                 <geometry>
 									<box size = "0.00001 0.00001 0.20001"/>
                 </geometry>
-            </collision>
+            </collision> -->
         </link>
     </xacro:macro>
 

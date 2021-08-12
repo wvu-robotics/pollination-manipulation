@@ -37,24 +37,6 @@ import numpy as np
 import math
 import actionlib
 
-#to do: add octomap
-#OLD POSES
-#Listing useful poses for camera
-#Above right of the tree: 
-#Trans = [-.285,.268,.733]
-#Rot = [.827,.227,-.456,.238]
-#Above Left of the tree:
-#Trans = [-.117,-.280,.742]
-#Rot = [.781,-0.074,-.512,-.349]
-#Bottom Left of the tree:
-#Trans = [-.396,-.016, .300]
-#Rot = [-0.382, .477, .397,.686]
-#Bottom Right of the tree:
-#Trans = [-.313,.325,.322]
-#Rot = [-.589,-.243,.650,-.415]
-#Middle stright on frame:
-#Trans = [.002,.034,.470]
-#Rot = [-.576,.323,.681,-.315]
 
 class BuildMap:
     def __init__(self):
@@ -72,7 +54,7 @@ class BuildMap:
 
     def send_pose(self,pose_goal):
         _send_goal = PoseStamped()
-        #put in a rotation transform here since currently having issue with global reference, eventually fix that issue and remove
+        #put in a rotation transform here since currently having issue with global reference, eventually fix that issue and remove        
         _send_goal.pose = pose_goal
         _control_goal = EEGoToPoseGoal(goal_pose=_send_goal)
         self._control_client.send_goal(_control_goal)
@@ -89,40 +71,35 @@ class BuildMap:
 
 
 
-#NEW POSITIONS 8/10/21 , all j2n6s300_link_6 in respect to j2n6s300_link_base
-# Straight on with Tree: 
-# - Translation: [-0.016, -0.248, 0.379]
-# - Rotation: in Quaternion [0.482, 0.504, -0.398, 0.596]
-#             in RPY (radian) [1.420, 1.395, 0.071]
-#             in RPY (degree) [81.351, 79.905, 4.041]
-# Top Right v1:
-# - Translation: [-0.280, 0.063, 0.826]
-# - Rotation: in Quaternion [0.546, 0.592, -0.166, 0.569]
-#             in RPY (radian) [2.180, 1.026, 1.080]
-#             in RPY (degree) [124.877, 58.764, 61.851]
-# Bottom Right:
-# - Translation: [-0.384, -0.266, 0.394]
-# - Rotation: in Quaternion [0.589, 0.381, 0.050, 0.711]
-#             in RPY (radian) [1.553, 0.504, 0.635]
-#             in RPY (degree) [88.964, 28.886, 36.408]
-#Top Left:
-# - Translation: [0.411, -0.091, 0.642]
-# - Rotation: in Quaternion [0.300, 0.778, -0.550, 0.050]
-#             in RPY (radian) [-2.013, 0.420, 2.673]
-#             in RPY (degree) [-115.328, 24.056, 153.149]
-#Bottom Left:
-# - Translation: [0.305, -0.156, 0.199]
-# - Rotation: in Quaternion [-0.286, -0.537, 0.793, 0.044]
-#             in RPY (radian) [-1.281, 0.418, 2.717]
-#             in RPY (degree) [-73.417, 23.955, 155.677]
+#Positions as of 8/12, j2n6s300 in respect to base_link
+#
+#Straight On
+# - Translation: [0.692, 0.042, 0.613]
+# - Rotation: in Quaternion [0.769, 0.225, 0.556, 0.224]
+#             in RPY (radian) [2.015, -0.854, 1.128]
+#             in RPY (degree) [115.440, -48.902, 64.625]
+#Top Left
+# - Translation: [0.643, 0.261, 0.733]
+# - Rotation: in Quaternion [0.845, -0.131, 0.437, 0.278]
+#             in RPY (radian) [2.487, -0.946, 0.037]
+#             in RPY (degree) [142.489, -54.230, 2.095]
+#Top Right
+# - Translation: [0.697, -0.130, 0.763]
+# - Rotation: in Quaternion [0.880, 0.227, 0.379, -0.175]
+#             in RPY (radian) [-2.936, -0.843, 0.413]
+#             in RPY (degree) [-168.239, -48.325, 23.689]
+#Bottom Right
+# - Translation: [0.575, -0.125, 0.531]
+# - Rotation: in Quaternion [-0.482, 0.389, -0.216, 0.755]
+#             in RPY (radian) [-1.317, 0.388, -0.859]
+#             in RPY (degree) [-75.443, 22.229, -49.222]
+#Bottom Left
+# - Translation: [0.569, 0.224, 0.471]
+# - Rotation: in Quaternion [0.160, 0.569, -0.194, 0.783]
+#             in RPY (radian) [0.098, 1.263, -0.413]
+#             in RPY (degree) [5.634, 72.340, -23.668]
 
 
-
-
-
-
-
-#positions 2-3 are currently fails, first
 
 
 #Initial (1
@@ -136,13 +113,13 @@ class BuildMap:
         # goal.angles.joint7 =  0
 
 
-        _pose_goal.position.x = 0.285
-        _pose_goal.position.y = -0.268
-        _pose_goal.position.z = 0.733
-        _pose_goal.orientation.x = -0.227
-        _pose_goal.orientation.y = 0.827
-        _pose_goal.orientation.z = 0.238
-        _pose_goal.orientation.w = 0.456
+        _pose_goal.position.x = 0.697
+        _pose_goal.position.y = -0.130
+        _pose_goal.position.z = 0.763
+        _pose_goal.orientation.x = 0.880
+        _pose_goal.orientation.y = 0.227
+        _pose_goal.orientation.z = 0.379
+        _pose_goal.orientation.w = -0.175
         self.send_pose(_pose_goal)
         # client.wait_for_server()
         # client.send_goal(goal)
@@ -163,13 +140,13 @@ class BuildMap:
         # goal.angles.joint6 =  -75.0
         # goal.angles.joint7 =  0.0
         
-        _pose_goal.position.x = -0.085
-        _pose_goal.position.y = 0.125
-        _pose_goal.position.z = 0.784
-        _pose_goal.orientation.x = 0.310
-        _pose_goal.orientation.y = 0.721
-        _pose_goal.orientation.z = -0.116
-        _pose_goal.orientation.w = 0.609
+        _pose_goal.position.x = 0.643
+        _pose_goal.position.y = 0.261
+        _pose_goal.position.z = 0.733
+        _pose_goal.orientation.x = 0.845
+        _pose_goal.orientation.y = -0.131
+        _pose_goal.orientation.z = 0.437
+        _pose_goal.orientation.w = 0.278
         self.send_pose(_pose_goal)
         self.search_for_flowers()
 
@@ -182,13 +159,13 @@ class BuildMap:
         # goal.angles.joint5= -140
         # goal.angles.joint6= 15.0
         # goal.angles.joint7= 0.0
-        _pose_goal.position.x = 0
-        _pose_goal.position.y = 0.236
-        _pose_goal.position.z = 0.396
-        _pose_goal.orientation.x = 0.297
-        _pose_goal.orientation.y = 0.658
-        _pose_goal.orientation.z = -0.146
-        _pose_goal.orientation.w = 0.676
+        _pose_goal.position.x = 0.569
+        _pose_goal.position.y = 0.224
+        _pose_goal.position.z = 0.471
+        _pose_goal.orientation.x = 0.160
+        _pose_goal.orientation.y = 0.569
+        _pose_goal.orientation.z = -0.194
+        _pose_goal.orientation.w = 0.783
         self.send_pose(_pose_goal)
 
         self.search_for_flowers()
@@ -202,13 +179,13 @@ class BuildMap:
         # goal.angles.joint5= -120
         # goal.angles.joint6= 55
         # goal.angles.joint7= 0.0
-        _pose_goal.position.x = 0.168
-        _pose_goal.position.y = 0.487
-        _pose_goal.position.z = 0.300
-        _pose_goal.orientation.x = -0.076
-        _pose_goal.orientation.y = 0.727
-        _pose_goal.orientation.z = 0.429
-        _pose_goal.orientation.w = 0.532
+        _pose_goal.position.x = 0.575
+        _pose_goal.position.y = -0.125
+        _pose_goal.position.z = 0.531
+        _pose_goal.orientation.x = -0.482
+        _pose_goal.orientation.y = 0.389
+        _pose_goal.orientation.z = -0.216
+        _pose_goal.orientation.w = 0.755
         self.send_pose(_pose_goal)
         # client.wait_for_server()
         # client.send_goal(goal)
@@ -247,13 +224,13 @@ class BuildMap:
         # goal.angles.joint5= 130
         # goal.angles.joint6= -170
         # goal.angles.joint7= 0.0
-        _pose_goal.position.x = 0.017
-        _pose_goal.position.y = 0.041
-        _pose_goal.position.z = 0.549
-        _pose_goal.orientation.x = -0.056
-        _pose_goal.orientation.y = 0.731
-        _pose_goal.orientation.z = 0.082
-        _pose_goal.orientation.w = 0.676
+        _pose_goal.position.x = -0.016
+        _pose_goal.position.y = -0.248
+        _pose_goal.position.z = 0.379
+        _pose_goal.orientation.x = 0.482
+        _pose_goal.orientation.y = 0.504
+        _pose_goal.orientation.z = -0.398
+        _pose_goal.orientation.w = 0.596
         self.send_pose(_pose_goal)
         # client.wait_for_server()
         # client.send_goal(goal)
