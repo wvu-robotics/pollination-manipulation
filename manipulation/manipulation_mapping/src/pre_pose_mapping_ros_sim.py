@@ -224,13 +224,13 @@ class BuildMap:
         # goal.angles.joint5= 130
         # goal.angles.joint6= -170
         # goal.angles.joint7= 0.0
-        _pose_goal.position.x = -0.016
-        _pose_goal.position.y = -0.248
-        _pose_goal.position.z = 0.379
-        _pose_goal.orientation.x = 0.482
-        _pose_goal.orientation.y = 0.504
-        _pose_goal.orientation.z = -0.398
-        _pose_goal.orientation.w = 0.596
+        _pose_goal.position.x = 0.692
+        _pose_goal.position.y = 0.042
+        _pose_goal.position.z = 0.613
+        _pose_goal.orientation.x = 0.769
+        _pose_goal.orientation.y = 0.225
+        _pose_goal.orientation.z = 0.556
+        _pose_goal.orientation.w = 0.224
         self.send_pose(_pose_goal)
         # client.wait_for_server()
         # client.send_goal(goal)
