@@ -635,7 +635,7 @@ bool Search::depth_constraint( cv::Mat & rgb,
                                cv::Mat & depth)
 {
   //criteria
-  double criteria = 0.75;
+  double criteria = .75;
 
   //filter rgb
   //TODO: change to pointers for efficiency
@@ -644,8 +644,8 @@ bool Search::depth_constraint( cv::Mat & rgb,
     for(int u=0; u < rgb.cols; u++)
     {
       //compute depth
-      float z = depth.at<short int>( cv::Point(u,v) ) / 1000.0;
-      if(z > criteria || z < 0.1) //depth constraint
+      float z = depth.at<short int>( cv::Point(u,v) );
+      if(z > criteria || z < 0) //depth constraint
       {
         rgb.at<cv::Vec3b>(cv::Point(u,v)) = cv::Vec3b(50,100,50);
       }

@@ -66,6 +66,7 @@ class Pollination_manipulation:
                 self.search_for_flowers() #delete
                 self.planning()           #delete
 
+
     def mapping(self):
         rospy.loginfo("Map_state")
         #Skipping map part
@@ -94,7 +95,7 @@ class Pollination_manipulation:
         rospy.loginfo(_ids)
         if not _ids:
             rospy.logerr("No Flower were detected")
-            self.end()
+            #self.end()
         _planning_client = actionlib.SimpleActionClient('plan_flower_sequence', PlanFlowerSequenceAction)
         _planning_client.wait_for_server()
         _planning_goal = PlanFlowerSequenceGoal(flower_ids=_ids)
@@ -122,12 +123,12 @@ class Pollination_manipulation:
         #self.current_flower.orientation.w =  3.5750321417e-06
 
 
-        rospy.wait_for_service('find_previsit_poses')
-        _find_previsit_poses=rospy.ServiceProxy('find_previsit_poses', FindPrevisitPoses)
-        try:
-            _previsit_poses = _find_previsit_poses(self.current_flower)
-        except rospy.ServiceException as exc:
-            print("Service did not process request: " + str(exc))
+        # rospy.wait_for_service('find_previsit_poses')
+        # _find_previsit_poses=rospy.ServiceProxy('find_previsit_poses', FindPrevisitPoses)
+        # try:
+        #     _previsit_poses = _find_previsit_poses(self.current_flower)
+        # except rospy.ServiceException as exc:
+        #     print("Service did not process request: " + str(exc))
         # rospy.loginfo(_previsit_poses.ee_poses)
 
         #Move to the offset pose to better estimate flower position
@@ -152,7 +153,7 @@ class Pollination_manipulation:
                    rospy.loginfo(self.number_flowers_pollinated)
                    self.individual_flower_pollination_procedure()
                 else:
-                   self.end()
+                   #self.end()
             self.search_for_flowers()
             _i = _i+1
             # rospy.loginfo(_control_result)
@@ -207,6 +208,7 @@ class Pollination_manipulation:
             print("Service did not process request: " + str(exc))
         #Add some exception
         return
+
 
     def visual_servoing(self):
         rospy.loginfo("Visual_servoing")

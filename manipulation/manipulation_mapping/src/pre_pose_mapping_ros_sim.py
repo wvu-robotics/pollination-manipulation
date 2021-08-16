@@ -214,32 +214,38 @@ class BuildMap:
 #         #     client.cancel_all_goals()
 
 
-#too far back, behind the base
+#I think this one is wrong, need to redo
+
+#Straight On
+# - Translation: [0.692, 0.042, 0.613]
+# - Rotation: in Quaternion [0.769, 0.225, 0.556, 0.224]
+#             in RPY (radian) [2.015, -0.854, 1.128]
+#             in RPY (degree) [115.440, -48.902, 64.625]
 #(5
-        rospy.loginfo("position 5:Middle of Tree")
-        # goal.angles.joint1= 170
-        # goal.angles.joint2= 230
-        # goal.angles.joint3= 90
-        # goal.angles.joint4= 0
-        # goal.angles.joint5= 130
-        # goal.angles.joint6= -170
-        # goal.angles.joint7= 0.0
-        _pose_goal.position.x = 0.692
-        _pose_goal.position.y = 0.042
-        _pose_goal.position.z = 0.613
-        _pose_goal.orientation.x = 0.769
-        _pose_goal.orientation.y = 0.225
-        _pose_goal.orientation.z = 0.556
-        _pose_goal.orientation.w = 0.224
-        self.send_pose(_pose_goal)
-        # client.wait_for_server()
-        # client.send_goal(goal)
-        # if client.wait_for_result(rospy.Duration(20.0)):
-        #     result = client.get_result()
-        # else:
-        #     print('        the joint angle action timed-out')
-        #     client.cancel_all_goals()
-        self.search_for_flowers()
+        # rospy.loginfo("position 5:Middle of Tree")
+        # # goal.angles.joint1= 170
+        # # goal.angles.joint2= 230
+        # # goal.angles.joint3= 90
+        # # goal.angles.joint4= 0
+        # # goal.angles.joint5= 130
+        # # goal.angles.joint6= -170
+        # # goal.angles.joint7= 0.0
+        # _pose_goal.position.x = 0.692
+        # _pose_goal.position.y = 0.042
+        # _pose_goal.position.z = 0.613
+        # _pose_goal.orientation.x = 0.769
+        # _pose_goal.orientation.y = 0.225
+        # _pose_goal.orientation.z = 0.556
+        # _pose_goal.orientation.w = 0.224
+        # self.send_pose(_pose_goal)
+        # # client.wait_for_server()
+        # # client.send_goal(goal)
+        # # if client.wait_for_result(rospy.Duration(20.0)):
+        # #     result = client.get_result()
+        # # else:
+        # #     print('        the joint angle action timed-out')
+        # #     client.cancel_all_goals()
+        # self.search_for_flowers()
 #Unused atm
 # #(6
 #         rospy.loginfo("position 6")
