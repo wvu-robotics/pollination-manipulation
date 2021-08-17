@@ -49,6 +49,8 @@ class Pollination_manipulation:
         self.end_pollination = Bool()
         #self.start_pollination.data = True
         self.current_flower = Pose()
+        self._control_client = actionlib.SimpleActionClient('ee_go_to_pose', EEGoToPoseAction)
+
         #set the robot to home position by Joint Control
         self.start()
 
@@ -63,8 +65,9 @@ class Pollination_manipulation:
             self.pollination_end_pub.publish(self.end_pollination)
             if self.start_pollination.data == True:
                 self.mapping()
-                self.search_for_flowers() #delete
-                self.planning()           #delete
+                #these shouldn't be needed
+                #self.search_for_flowers() #delete
+                #self.planning()           #delete
 
 
     def mapping(self):
@@ -95,7 +98,7 @@ class Pollination_manipulation:
         rospy.loginfo(_ids)
         if not _ids:
             rospy.logerr("No Flower were detected")
-            #self.end()
+            self.end()
         _planning_client = actionlib.SimpleActionClient('plan_flower_sequence', PlanFlowerSequenceAction)
         _planning_client.wait_for_server()
         _planning_goal = PlanFlowerSequenceGoal(flower_ids=_ids)
@@ -106,96 +109,122 @@ class Pollination_manipulation:
         self.flowers_with_offset = _planning_client.get_result().ee_previsit_poses
         rospy.loginfo(self.flowers_order)
         self.individual_flower_pollination_procedure()
-
-    def individual_flower_pollination_procedure(self):
-        rospy.loginfo("Pollinating Flower: %f",self.flowers_order[self.number_flowers_pollinated])
-        for _flower in self.flowers.map:
-            if _flower.id ==  self.flowers_order[self.number_flowers_pollinated]:
-                rospy.loginfo(_flower.point)
-
-        _control_client = actionlib.SimpleActionClient('ee_go_to_pose', EEGoToPoseAction)
-        print(self.flowers_with_offset[self.number_flowers_pollinated])
-        self.current_flower = self.flowers_with_offset[self.number_flowers_pollinated]
-
-        #self.current_flower.orientation.x = -1.96422831761e-05
-        #self.current_flower.orientation.y = 0.707111340811
-        #self.current_flower.orientation.z = -0.707102221251
-        #self.current_flower.orientation.w =  3.5750321417e-06
-
-
-        # rospy.wait_for_service('find_previsit_poses')
-        # _find_previsit_poses=rospy.ServiceProxy('find_previsit_poses', FindPrevisitPoses)
-        # try:
-        #     _previsit_poses = _find_previsit_poses(self.current_flower)
-        # except rospy.ServiceException as exc:
-        #     print("Service did not process request: " + str(exc))
-        # rospy.loginfo(_previsit_poses.ee_poses)
-
-        #Move to the offset pose to better estimate flower position
-        for _goal in _previsit_poses.ee_poses:
-            _i=1
-            _control_client.wait_for_server()
-            _send_goal = PoseStamped()
-            _send_goal.pose = _goal
-            # rospy.loginfo(_send_goal)
-            _control_goal = EEGoToPoseGoal(goal_pose=_send_goal)
-            _control_client.send_goal(_control_goal)
-            _control_client.wait_for_result()
-            _control_result=_control_client.get_result()
-            # if (_i==1 or _i==5)and _control_result.goal_reached==False:
-            if _control_result.goal_reached==False:
-                rospy.logerr("Skipping flower")
-                self.flowers_not_pollinated_due_error.append(self.flowers_order[self.number_flowers_pollinated])
-#                self.flowers_order = self.flowers_order.append(self.flowers_order[self.number_flowers_pollinated])
-#                self.flowers_with_offset = self.flowers_with_offset.append(self.flowers_with_offset[self.number_flowers_pollinated])
-                self.number_flowers_pollinated = self.number_flowers_pollinated +1
-                if self.number_flowers_pollinated < len(self.flowers_order):
-                   rospy.loginfo(self.number_flowers_pollinated)
-                   self.individual_flower_pollination_procedure()
-                else:
-                   #self.end()
-            self.search_for_flowers()
-            _i = _i+1
-            # rospy.loginfo(_control_result)
-            # rospy.loginfo("current Flower:")
-            # rospy.loginfo(self.current_flower)
-            #rospy.loginfo("Number of Flowers pollinated: %d", self.number_flowers_pollinated)
-            #rospy.loginfo("Total Number of Flowers: %d", len(self.flowers_order))
-
-        for _flower in self.flowers.map:
-            if _flower.id ==  self.flowers_order[self.number_flowers_pollinated]:
-                self.current_flower = _flower.pose
-
-
-        rospy.loginfo("Final Previsit Pose")
-        rospy.wait_for_service('final_previsit_pose')
-        _final_previsit_pose=rospy.ServiceProxy('final_previsit_pose', FinalPrevisitPose)
-        try:
-            _final_pose = _final_previsit_pose(self.current_flower)
-        except rospy.ServiceException as exc:
-            print("Service did not process request: " + str(exc))
-        # rospy.loginfo(_final_pose.ee_previsit_pose)
-
-        #Go To position to start pollinating
+    
+    def send_pose(self,pose_goal):
         _send_goal = PoseStamped()
-        _send_goal.pose = _final_pose.ee_previsit_pose
-        _control_client.wait_for_server()
+        #put in a rotation transform here since currently having issue with global reference, eventually fix that issue and remove        
+        _send_goal.pose = pose_goal
         _control_goal = EEGoToPoseGoal(goal_pose=_send_goal)
-        _control_client.send_goal(_control_goal)
-        _control_client.wait_for_result()
-        _control_result=_control_client.get_result()
-        # rospy.loginfo(_control_result)
+        self._control_client.send_goal(_control_goal)
+        self._control_client.wait_for_result()
+        _control_result=self._control_client.get_result()
+        return _control_result.goal_reached
 
-        if _control_result.goal_reached==True:
-            self.visual_servoing()
-        else:
-            self.flowers_not_pollinated_due_error.append(self.flowers_order[self.number_flowers_pollinated])
-            self.number_flowers_pollinated = self.number_flowers_pollinated +1
-            if self.number_flowers_pollinated < len(self.flowers_order):
-               rospy.loginfo(self.number_flowers_pollinated)
-               self.individual_flower_pollination_procedure()
-            else:
-               self.end()
+
+#new version
+    def individual_flower_pollination_procedure(self):
+        rospy.loginfo("Pollinating state")
+        rospy.loginfo(self.flowers_order)
+        rospy.loginfo(self.flowers_with_offset)
+        i = 0
+        for pose in self.flowers_with_offset:
+            if self.send_pose(pose) :
+                rospy.loginfo("Succesfully Pollinated Flower "+str(self.flowers_order[i]))
+            else :
+                rospy.logerr("Failed to Pollinate Flower "+str(self.flowers_order[i]))
+                self.flowers_not_pollinated_due_error.append(self.flowers_order[i])
+            i += 1
+        self.end()
+
+#     def individual_flower_pollination_procedure(self):
+#         rospy.loginfo("Pollinating Flower: %f",self.flowers_order[self.number_flowers_pollinated])
+#         for _flower in self.flowers.map:
+#             if _flower.id ==  self.flowers_order[self.number_flowers_pollinated]:
+#                 rospy.loginfo(_flower.point)
+
+#         _control_client = actionlib.SimpleActionClient('ee_go_to_pose', EEGoToPoseAction)
+#         print(self.flowers_with_offset[self.number_flowers_pollinated])
+#         self.current_flower = self.flowers_with_offset[self.number_flowers_pollinated]
+
+#         #self.current_flower.orientation.x = -1.96422831761e-05
+#         #self.current_flower.orientation.y = 0.707111340811
+#         #self.current_flower.orientation.z = -0.707102221251
+#         #self.current_flower.orientation.w =  3.5750321417e-06
+
+
+#         # rospy.wait_for_service('find_previsit_poses')
+#         # _find_previsit_poses=rospy.ServiceProxy('find_previsit_poses', FindPrevisitPoses)
+#         # try:
+#         #     _previsit_poses = _find_previsit_poses(self.current_flower)
+#         # except rospy.ServiceException as exc:
+#         #     print("Service did not process request: " + str(exc))
+#         # rospy.loginfo(_previsit_poses.ee_poses)
+
+#         #Move to the offset pose to better estimate flower position
+#         for _goal in _previsit_poses.ee_poses:
+#             _i=1
+#             _control_client.wait_for_server()
+#             _send_goal = PoseStamped()
+#             _send_goal.pose = _goal
+#             # rospy.loginfo(_send_goal)
+#             _control_goal = EEGoToPoseGoal(goal_pose=_send_goal)
+#             _control_client.send_goal(_control_goal)
+#             _control_client.wait_for_result()
+#             _control_result=_control_client.get_result()
+#             # if (_i==1 or _i==5)and _control_result.goal_reached==False:
+#             if _control_result.goal_reached==False:
+#                 rospy.logerr("Skipping flower")
+#                 self.flowers_not_pollinated_due_error.append(self.flowers_order[self.number_flowers_pollinated])
+# #                self.flowers_order = self.flowers_order.append(self.flowers_order[self.number_flowers_pollinated])
+# #                self.flowers_with_offset = self.flowers_with_offset.append(self.flowers_with_offset[self.number_flowers_pollinated])
+#                 self.number_flowers_pollinated = self.number_flowers_pollinated +1
+#                 if self.number_flowers_pollinated < len(self.flowers_order):
+#                    rospy.loginfo(self.number_flowers_pollinated)
+#                    self.individual_flower_pollination_procedure()
+#                 else:
+#                    #self.end()
+#             self.search_for_flowers()
+#             _i = _i+1
+#             # rospy.loginfo(_control_result)
+#             # rospy.loginfo("current Flower:")
+#             # rospy.loginfo(self.current_flower)
+#             #rospy.loginfo("Number of Flowers pollinated: %d", self.number_flowers_pollinated)
+#             #rospy.loginfo("Total Number of Flowers: %d", len(self.flowers_order))
+
+#         for _flower in self.flowers.map:
+#             if _flower.id ==  self.flowers_order[self.number_flowers_pollinated]:
+#                 self.current_flower = _flower.pose
+
+
+#         rospy.loginfo("Final Previsit Pose")
+#         rospy.wait_for_service('final_previsit_pose')
+#         _final_previsit_pose=rospy.ServiceProxy('final_previsit_pose', FinalPrevisitPose)
+#         try:
+#             _final_pose = _final_previsit_pose(self.current_flower)
+#         except rospy.ServiceException as exc:
+#             print("Service did not process request: " + str(exc))
+#         # rospy.loginfo(_final_pose.ee_previsit_pose)
+
+#         #Go To position to start pollinating
+#         _send_goal = PoseStamped()
+#         _send_goal.pose = _final_pose.ee_previsit_pose
+#         _control_client.wait_for_server()
+#         _control_goal = EEGoToPoseGoal(goal_pose=_send_goal)
+#         _control_client.send_goal(_control_goal)
+#         _control_client.wait_for_result()
+#         _control_result=_control_client.get_result()
+#         # rospy.loginfo(_control_result)
+
+#         if _control_result.goal_reached==True:
+#             self.visual_servoing()
+#         else:
+#             self.flowers_not_pollinated_due_error.append(self.flowers_order[self.number_flowers_pollinated])
+#             self.number_flowers_pollinated = self.number_flowers_pollinated +1
+#             if self.number_flowers_pollinated < len(self.flowers_order):
+#                rospy.loginfo(self.number_flowers_pollinated)
+#                self.individual_flower_pollination_procedure()
+#             else:
+#                self.end()
 
 
     def search_for_flowers(self):
@@ -257,8 +286,8 @@ class Pollination_manipulation:
         self.pub.publish(self.start_pollination)
         self.flowers_order = Int16()
         self.flowers = FlowerMap()
-        self.flowers_with_offset = Pose()
-        self.home_position()
+        self.flowers_with_offset = []
+        #self.home_position()
         self.start()
 
     def home_position(self):

@@ -304,7 +304,7 @@ class Planning_Flower_Sequence:
                     self.ee_pose = Pose()
                     pos_flower = np.array([flower_.point.point.x, flower_.point.point.y, flower_.point.point.z])
                     #new_offset = np.multiply(np.array([-0.2,-0.2,-0.2]),np.array([flower_.vec.vector.x,flower_.vec.vector.y,flower_.vec.vector.z]))
-                    new_offset = np.array([0.0,0.2,0.0])
+                    new_offset = np.array([0.0,0,0.0])
 
                     print("Flower pose: {}".format(pos_flower))
 

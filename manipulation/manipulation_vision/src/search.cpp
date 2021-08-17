@@ -192,7 +192,7 @@ bool Search::search(manipulation_common::SearchForFlowers::Request  &req,
 
       //xyz
       geometry_msgs::Point point;
-      point.z = cv_depth_ptr->image.at<short int>( cv::Point(u,v) ) / 1000.0;
+      point.z = cv_depth_ptr->image.at<short int>( cv::Point(u,v) );
       point.x = (u - msg_depth_info_ptr->K[2]) * point.z / msg_depth_info_ptr->K[0];
       point.y = (v - msg_depth_info_ptr->K[5]) * point.z / msg_depth_info_ptr->K[4];
       std::cout << "search: (i, x, y, z, p) = " << i << ", "
@@ -274,7 +274,7 @@ bool Search::search(manipulation_common::SearchForFlowers::Request  &req,
       // also check if depth is reasonable, must check again (in additiona to
       // depth constraint since flower may only be partially segmented resulting
       // in poor estimate of pose)
-      if(point.z < 0.75 && point.z > 0.05)
+      if(point.z < 1.2 && point.z > 0.05)
       {
         obs.push_back(pose_new);
       }
@@ -635,7 +635,7 @@ bool Search::depth_constraint( cv::Mat & rgb,
                                cv::Mat & depth)
 {
   //criteria
-  double criteria = .75;
+  double criteria = 1.2;
 
   //filter rgb
   //TODO: change to pointers for efficiency
