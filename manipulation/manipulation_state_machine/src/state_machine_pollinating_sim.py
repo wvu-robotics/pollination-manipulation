@@ -287,29 +287,39 @@ class Pollination_manipulation:
         self.flowers_order = Int16()
         self.flowers = FlowerMap()
         self.flowers_with_offset = []
-        #self.home_position()
+        self.home_position()
         self.start()
 
     def home_position(self):
         rospy.loginfo("Go to Home Position/Unwind")
-        _client = actionlib.SimpleActionClient( "/j2n6s300_driver/joints_action/joint_angles",kinova_msgs.msg.ArmJointAnglesAction)
-        _client.wait_for_server()
-        _goal = kinova_msgs.msg.ArmJointAnglesGoal()
-        _goal.angles.joint1 =  270.0
-        _goal.angles.joint2 =  150.0
-        _goal.angles.joint3 =  60.0
-        _goal.angles.joint4 =  120.0
-        _goal.angles.joint5 =  0.0
-        _goal.angles.joint6 =  -90.0
-        _goal.angles.joint7 =  0
-        _client.send_goal(_goal)
-        if _client.wait_for_result(rospy.Duration(20.0)):
-            _result = _client.get_result()
-            return
-        else:
-            rospy.logerr('the joint angle action timed-out')
-            _client.cancel_all_goals()
-            return
+        _pose_goal = Pose()
+        _pose_goal.position.x = 0.497
+        _pose_goal.position.y = 0.029
+        _pose_goal.position.z = 0.550
+        _pose_goal.orientation.x = -0.094
+        _pose_goal.orientation.y = 0.860
+        _pose_goal.orientation.z = -0.012
+        _pose_goal.orientation.w = 0.501
+        self.send_pose(_pose_goal)
+
+        # _client = actionlib.SimpleActionClient( "/j2n6s300_driver/joints_action/joint_angles",kinova_msgs.msg.ArmJointAnglesAction)
+        # _client.wait_for_server()
+        # _goal = kinova_msgs.msg.ArmJointAnglesGoal()
+        # _goal.angles.joint1 =  270.0
+        # _goal.angles.joint2 =  150.0
+        # _goal.angles.joint3 =  60.0
+        # _goal.angles.joint4 =  120.0
+        # _goal.angles.joint5 =  0.0
+        # _goal.angles.joint6 =  -90.0
+        # _goal.angles.joint7 =  0
+        # _client.send_goal(_goal)
+        # if _client.wait_for_result(rospy.Duration(20.0)):
+        #     _result = _client.get_result()
+        #     return
+        # else:
+        #     rospy.logerr('the joint angle action timed-out')
+        #     _client.cancel_all_goals()
+        #     return
 
 
     def shutdown(self):

@@ -79,15 +79,17 @@ EEGoToPoseAction::EEGoToPoseAction(std::string _action_name, ros::NodeHandle &_n
   // add_dev_table();
   add_brambleebee_arch();
   add_brambleebee_computer_box();**/
+  //group_arm_->setNamedTarget("Retract");
+  ROS_INFO("Action Server starting");
+  action_server_.start();
 
-  // group_arm_->setNamedTarget("Retract");
+
   // group_arm_->move();
   // ros::WallDuration(0.5).sleep();
 
   // action_server_.registerGoalCallback(boost::bind(&EEGoToPoseAction::goal_clk, this));
 
-  ROS_INFO("Action Server starting");
-  action_server_.start();
+
 }
 
 void EEGoToPoseAction::goal_clk()

@@ -74,10 +74,12 @@ class BuildMap:
 #Positions as of 8/12, j2n6s300 in respect to base_link
 #
 #Straight On
-# - Translation: [0.692, 0.042, 0.613]
-# - Rotation: in Quaternion [0.769, 0.225, 0.556, 0.224]
-#             in RPY (radian) [2.015, -0.854, 1.128]
-#             in RPY (degree) [115.440, -48.902, 64.625]
+# - Translation: [0.760, 0.050, 0.591]
+# - Rotation: in Quaternion [0.698, 0.261, 0.653, 0.132]
+#             in RPY (radian) [1.781, -1.004, 1.551]
+#             in RPY (degree) [102.017, -57.539, 88.886]
+
+
 #Top Left
 # - Translation: [0.643, 0.261, 0.733]
 # - Rotation: in Quaternion [0.845, -0.131, 0.437, 0.278]
@@ -98,12 +100,44 @@ class BuildMap:
 # - Rotation: in Quaternion [0.160, 0.569, -0.194, 0.783]
 #             in RPY (radian) [0.098, 1.263, -0.413]
 #             in RPY (degree) [5.634, 72.340, -23.668]
+# 
 
 
+#Retract position
+# - Translation: [0.497, 0.029, 0.550]
+# - Rotation: in Quaternion [-0.094, 0.860, -0.012, 0.501]
+#             in RPY (radian) [-2.916, 1.035, -2.795]
+#             in RPY (degree) [-167.072, 59.276, -160.138]
 
 
-#Initial (1
-        rospy.loginfo("position 1: Top Right of Tree")
+#(1
+        rospy.loginfo("position 1:Middle of Tree")
+        # # goal.angles.joint1= 170
+        # # goal.angles.joint2= 230
+        # # goal.angles.joint3= 90
+        # # goal.angles.joint4= 0
+        # # goal.angles.joint5= 130
+        # # goal.angles.joint6= -170
+        # # goal.angles.joint7= 0.0
+        _pose_goal.position.x = 0.760
+        _pose_goal.position.y = 0.050
+        _pose_goal.position.z = 0.591
+        _pose_goal.orientation.x = 0.698
+        _pose_goal.orientation.y = 0.261
+        _pose_goal.orientation.z = 0.653
+        _pose_goal.orientation.w = 0.132
+        self.send_pose(_pose_goal)
+        # # client.wait_for_server()
+        # # client.send_goal(goal)
+        # # if client.wait_for_result(rospy.Duration(20.0)):
+        # #     result = client.get_result()
+        # # else:
+        # #     print('        the joint angle action timed-out')
+        # #     client.cancel_all_goals()
+        self.search_for_flowers()
+
+#Initial (2
+        rospy.loginfo("position 2: Top Right of Tree")
         # goal.angles.joint1 =  270.0
         # goal.angles.joint2 =  120.0
         # goal.angles.joint3 =  30.0
@@ -130,8 +164,8 @@ class BuildMap:
         #     client.cancel_all_goals()
         self.search_for_flowers()
 
-#(2
-        rospy.loginfo("position 2: Top Left of Tree")
+#(3
+        rospy.loginfo("position 3: Top Left of Tree")
         # goal.angles.joint1 =  310.0
         # goal.angles.joint2 =  150.0
         # goal.angles.joint3 =  160.0
@@ -150,8 +184,8 @@ class BuildMap:
         self.send_pose(_pose_goal)
         self.search_for_flowers()
 
-#(3
-        rospy.loginfo("position 3:Bottom Left of Tree")
+#(4
+        rospy.loginfo("position 4:Bottom Left of Tree")
         # goal.angles.joint1= 370
         # goal.angles.joint2= 180
         # goal.angles.joint3= 75
@@ -170,8 +204,8 @@ class BuildMap:
 
         self.search_for_flowers()
 
-#(4
-        rospy.loginfo("position 4:Bottom Right of Tree")
+#(5
+        rospy.loginfo("position 5:Bottom Right of Tree")
         # goal.angles.joint1= 370
         # goal.angles.joint2= 230
         # goal.angles.joint3= 80
@@ -216,36 +250,7 @@ class BuildMap:
 
 #I think this one is wrong, need to redo
 
-#Straight On
-# - Translation: [0.692, 0.042, 0.613]
-# - Rotation: in Quaternion [0.769, 0.225, 0.556, 0.224]
-#             in RPY (radian) [2.015, -0.854, 1.128]
-#             in RPY (degree) [115.440, -48.902, 64.625]
-#(5
-        # rospy.loginfo("position 5:Middle of Tree")
-        # # goal.angles.joint1= 170
-        # # goal.angles.joint2= 230
-        # # goal.angles.joint3= 90
-        # # goal.angles.joint4= 0
-        # # goal.angles.joint5= 130
-        # # goal.angles.joint6= -170
-        # # goal.angles.joint7= 0.0
-        # _pose_goal.position.x = 0.692
-        # _pose_goal.position.y = 0.042
-        # _pose_goal.position.z = 0.613
-        # _pose_goal.orientation.x = 0.769
-        # _pose_goal.orientation.y = 0.225
-        # _pose_goal.orientation.z = 0.556
-        # _pose_goal.orientation.w = 0.224
-        # self.send_pose(_pose_goal)
-        # # client.wait_for_server()
-        # # client.send_goal(goal)
-        # # if client.wait_for_result(rospy.Duration(20.0)):
-        # #     result = client.get_result()
-        # # else:
-        # #     print('        the joint angle action timed-out')
-        # #     client.cancel_all_goals()
-        # self.search_for_flowers()
+
 #Unused atm
 # #(6
 #         rospy.loginfo("position 6")
