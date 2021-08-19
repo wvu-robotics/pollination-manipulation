@@ -116,9 +116,10 @@ class Pollination_manipulation:
         _send_goal.pose = pose_goal
         _control_goal = EEGoToPoseGoal(goal_pose=_send_goal)
         self._control_client.send_goal(_control_goal)
-        self._control_client.wait_for_result()
-        _control_result=self._control_client.get_result()
-        return _control_result.goal_reached
+        #make this non blocking
+        # self._control_client.wait_for_result()
+        # _control_result=self._control_client.get_result()
+        # return _control_result.goal_reached
 
 
 #new version
