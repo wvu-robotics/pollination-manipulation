@@ -175,3 +175,9 @@ target_link_libraries(depthcallback_test
 	${catkin_LIBRARIES}
 	${OpenCV_LIBS}
 )
+
+add_executable(dummy_subscriber src/dummy_subscriber.cpp)
+add_dependencies(dummy_subscriber manipulation_vision_generate_messages_cpp)
+target_link_libraries(dummy_subscriber
+  ${catkin_LIBRARIES}
+)

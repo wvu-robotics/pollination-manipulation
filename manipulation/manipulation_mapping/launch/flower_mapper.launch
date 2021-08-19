@@ -35,5 +35,11 @@
         type="search_node"
         output="screen">
   </node>
+
+  <node pkg="manipulation_vision"
+        name="dummy_subscriber"
+        type="dummy_subscriber"
+        output="screen">
+  </node>
   
 </launch>
