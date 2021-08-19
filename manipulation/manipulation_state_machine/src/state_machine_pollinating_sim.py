@@ -50,8 +50,8 @@ class Pollination_manipulation:
         #self.start_pollination.data = True
         self.current_flower = Pose()
         self._control_client = actionlib.SimpleActionClient('ee_go_to_pose', EEGoToPoseAction)
-
         #set the robot to home position by Joint Control
+
         self.start()
 
     def global_flower_poses(self,data):
@@ -59,7 +59,7 @@ class Pollination_manipulation:
 
     def start(self):
         while not rospy.is_shutdown():
-            #self.home_position()
+            self.home_position()
             self.start_pollination = rospy.wait_for_message("start_pollination_procedures",Bool)
             self.end_pollination.data = False
             self.pollination_end_pub.publish(self.end_pollination)
@@ -287,7 +287,7 @@ class Pollination_manipulation:
         self.flowers_order = Int16()
         self.flowers = FlowerMap()
         self.flowers_with_offset = []
-        self.home_position()
+        #self.home_position()
         self.start()
 
     def home_position(self):
