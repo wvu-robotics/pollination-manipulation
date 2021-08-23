@@ -38,16 +38,16 @@ This software has been tested on Ubuntu 18.04 with ROS Kinetic with OpenCV 3.4.1
 
 This uses submodules, please refer to the [wiki page](https://github.com/wvu-irl/guides-and-resources/wiki/Git-Submodules) on how to work with submodules.
 
-<!-- This software also requires Intel RealSense SDK, please follow these [instructions on how to install](https://github.com/IntelRealSense/librealsense/blob/master/doc/distribution_linux.md) and make sure to install `librealsense2-dkms`, `librealsense2-utils`, and `librealsense2-dev` using the following command:
+ This software also requires Intel RealSense SDK, please follow these [instructions on how to install](https://github.com/IntelRealSense/librealsense/blob/master/doc/distribution_linux.md) and make sure to install `librealsense2-dkms`, `librealsense2-utils`, and `librealsense2-dev` using the following command:
 
 ```
 sudo apt-get install -y librealsense2-dkms=1.3.4-0ubuntu1 librealsense2=2.17.1-0~realsense0.372 librealsense2-utils=2.17.1-0~realsense0.372 librealsense2-dev=2.17.1-0~realsense0.372
-``` -->
+```
 
-<!-- Intel RealSense working with:
+Intel RealSense working with:
 * SDK 1.17.1
 * Firmware 5.11.1.0
-* intel-ros development branch commit: bc31f2c358037adfa6c3a4e19ccf5845e96ca57a -->
+* intel-ros development branch commit: bc31f2c358037adfa6c3a4e19ccf5845e96ca57a
 
 Also, MoveIt must be installed:
 ```
