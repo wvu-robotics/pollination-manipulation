@@ -59,8 +59,9 @@ sudo apt-get install -y ros-melodic-pcl-ros ros-melodic-tf2-geometry-msgs
 ```
 
 #Pandas
+```
 sudo pip install pandas
-
+```
 ## Tensorflow       
 Install tensorflow (CPU version) via pip:
 
