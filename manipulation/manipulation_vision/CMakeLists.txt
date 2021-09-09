@@ -93,11 +93,13 @@ include_directories(SYSTEM ${Boost_INCLUDE_DIR} ${EIGEN_INCLUDE_DIRS})
 
 ## Declare a C++ library
 add_library(segmentation src/segmentation.cpp)
+add_dependencies(segmentation ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(segmentation ${catkin_LIBRARIES}
 	${OpenCV_LIBS}
 )
 
 add_library(classification src/classification.cpp)
+add_dependencies(classification ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(classification ${catkin_LIBRARIES}
 	${OpenCV_LIBS}
 	${PYTHON_LIBRARIES}
