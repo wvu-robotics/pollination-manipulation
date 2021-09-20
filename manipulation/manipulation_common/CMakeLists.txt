@@ -26,6 +26,7 @@ add_message_files(
 	Flower.msg
 	FlowerMap.msg
   EigenDecomp.msg
+  StateMachine.msg
 )
 
 ## Generate services in the 'srv' folder
