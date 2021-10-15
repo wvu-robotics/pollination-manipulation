@@ -22,6 +22,7 @@ from geometry_msgs.msg import PoseStamped
 from geometry_msgs.msg import Pose
 from manipulation_common.msg import FlowerMap
 from manipulation_common.msg import Flower
+from manipulation_common.msg import StateMachine
 
 
 from tf import transformations as t
@@ -39,6 +40,7 @@ class Pollination_manipulation:
         rospy.loginfo("Pollination manipulation State Machine node started")
         self.pollination_end_pub = rospy.Publisher("pollination_procedure_ended", Bool,queue_size=1)
         self.pub = rospy.Publisher("start_pollination_procedures", Bool, queue_size = 1)
+        self.state_pub = rospy.Publisher("manipulation_state_machine_state", StateMachine, queue_size = 1)
         self.flowers = FlowerMap() ####CHANGE THE TYPE OF MESSAGE FOR THE SUBSCRIBER ########
         rospy.Subscriber("/flower_mapper/flower_map", FlowerMap, self.global_flower_poses)
         self.flowers_with_offset = Pose()
@@ -47,6 +49,7 @@ class Pollination_manipulation:
         self.flowers_not_pollinated_due_error = []
         self.start_pollination = Bool()
         self.end_pollination = Bool()
+        self.state_msg = StateMachine()
         #self.start_pollination.data = True
         self.current_flower = Pose()
         self._control_client = actionlib.SimpleActionClient('ee_go_to_pose', EEGoToPoseAction)
@@ -60,6 +63,9 @@ class Pollination_manipulation:
     def start(self):
         while not rospy.is_shutdown():
             self.home_position()
+            self.state_msg.state = "start"
+            self.state_msg.target_flower_id = -1
+            self.state_pub.publish(self.state_msg)
             self.start_pollination = rospy.wait_for_message("start_pollination_procedures",Bool)
             self.end_pollination.data = False
             self.pollination_end_pub.publish(self.end_pollination)
@@ -72,6 +78,9 @@ class Pollination_manipulation:
 
     def mapping(self):
         rospy.loginfo("Map_state")
+        self.state_msg.state = "mapping"
+        self.state_msg.target_flower_id = -1
+        self.state_pub.publish(self.state_msg)
         #Skipping map part
         #self.individual_flower_pollination_procedure()
         _mapping_client = actionlib.SimpleActionClient("/build_map", BuildMapAction)
@@ -90,6 +99,9 @@ class Pollination_manipulation:
 
     def planning(self):
         rospy.loginfo("Planning")
+        self.state_msg.state = "planning"
+        self.state_msg.target_flower_id = -1
+        self.state_pub.publish(self.state_msg)
         _ids = []
         for _id in self.flowers.map:
             # if (_id.pose.position.y <= -0.7): # 70cm
@@ -114,8 +126,11 @@ class Pollination_manipulation:
         _send_goal = PoseStamped()
         #put in a rotation transform here since currently having issue with global reference, eventually fix that issue and remove        
         _send_goal.pose = pose_goal
+        rospy.loginfo("before EEGoToPoseGoal")
         _control_goal = EEGoToPoseGoal(goal_pose=_send_goal)
+        rospy.loginfo("after EEGoToPoseGoal")
         self._control_client.send_goal(_control_goal)
+        rospy.loginfo("after _control_client.send_goal")
         #make this non blocking
         # self._control_client.wait_for_result()
         # _control_result=self._control_client.get_result()
@@ -129,8 +144,16 @@ class Pollination_manipulation:
         rospy.loginfo(self.flowers_with_offset)
         i = 0
         for pose in self.flowers_with_offset:
+            rospy.loginfo("Attempting to pollinate "+str(self.flowers_order[i]))
+            self.state_msg.state = "approaching"
+            self.state_msg.target_flower_id = self.flowers_order[i]
+            self.state_pub.publish(self.state_msg)
             if self.send_pose(pose) :
-                rospy.loginfo("Succesfully Pollinated Flower "+str(self.flowers_order[i]))
+                rospy.loginfo("Succesfully Reached Flower "+str(self.flowers_order[i])+". Pollinating...")
+                self.state_msg.state = "pollinating"
+                self.state_msg.target_flower_id = self.flowers_order[i]
+                self.state_pub.publish(self.state_msg)
+                rospy.sleep(5.0) # Sleep for 5 seconds to simulate end effector working
             else :
                 rospy.logerr("Failed to Pollinate Flower "+str(self.flowers_order[i]))
                 self.flowers_not_pollinated_due_error.append(self.flowers_order[i])
@@ -276,6 +299,9 @@ class Pollination_manipulation:
 
     def end(self):
         rospy.loginfo("Pollination Procedures ended")
+        self.state_msg.state = "end"
+        self.state_msg.target_flower_id = -1
+        self.state_pub.publish(self.state_msg)
         self.number_flowers_pollinated = 0
         self.start_pollination.data = False
         self.end_pollination.data = True
