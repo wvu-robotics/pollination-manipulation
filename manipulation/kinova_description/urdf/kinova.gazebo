@@ -58,6 +58,30 @@
       </sensor>
     </gazebo>
 
+      <gazebo reference="j2n6s300_link_1">
+        <material>Gazebo/Black</material>
+      </gazebo>
+
+      <gazebo reference="j2n6s300_link_2">
+        <material>Gazebo/Black</material>
+      </gazebo>
+
+      <gazebo reference="j2n6s300_link_3">
+        <material>Gazebo/Black</material>
+      </gazebo>
+      
+      <gazebo reference="j2n6s300_link_4">
+        <material>Gazebo/Black</material>
+      </gazebo>      
+
+      <gazebo reference="j2n6s300_link_5">
+        <material>Gazebo/Black</material>
+      </gazebo>
+      
+      <gazebo reference="j2n6s300_link_6">
+        <material>Gazebo/Yellow</material>
+      </gazebo>
+
 </xacro:macro>
 
 </root>
