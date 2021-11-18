@@ -129,7 +129,8 @@
 
 
 
-    <property name="joint_end_effector_origin_rpy" value="0.0 0.0 0" />
+    <property name="joint_end_effector_origin_rpy" value="0.092 0.01 2.1552" />
+    
     <xacro:macro name="j2n6s300" params="base_parent prefix:=j2n6s300">
 
         <xacro:gazebo_config robot_namespace="${prefix}"/>

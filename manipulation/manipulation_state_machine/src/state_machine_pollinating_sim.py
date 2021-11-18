@@ -53,8 +53,9 @@ class Pollination_manipulation:
         #self.start_pollination.data = True
         self.current_flower = Pose()
         self._control_client = actionlib.SimpleActionClient('ee_go_to_pose', EEGoToPoseAction)
-        #set the robot to home position by Joint Control
-
+        #set the robot to home position and timeout for reaching goal position at the beginning
+        self.home_position()
+        rospy.sleep(5.0)
         self.start()
 
     def global_flower_poses(self,data):
@@ -131,9 +132,15 @@ class Pollination_manipulation:
         rospy.loginfo("after EEGoToPoseGoal")
         self._control_client.send_goal(_control_goal)
         rospy.loginfo("after _control_client.send_goal")
-        #make this non blocking
-        # self._control_client.wait_for_result()
-        # _control_result=self._control_client.get_result()
+        
+        if _control_client.wait_for_result(rospy.Duration(20.0)):
+            _result = _control_client.get_result()
+            return
+        else:
+            rospy.logerr('the joint angle action timed-out')
+            _control_client.cancel_all_goals()
+            return        
+
         # return _control_result.goal_reached
 
 
@@ -314,7 +321,7 @@ class Pollination_manipulation:
         self.flowers_order = Int16()
         self.flowers = FlowerMap()
         self.flowers_with_offset = []
-        #self.home_position()
+        self.home_position()
         self.start()
 
     def home_position(self):
@@ -328,26 +335,6 @@ class Pollination_manipulation:
         _pose_goal.orientation.z = -0.012
         _pose_goal.orientation.w = 0.501
         self.send_pose(_pose_goal)
-
-        # _client = actionlib.SimpleActionClient( "/j2n6s300_driver/joints_action/joint_angles",kinova_msgs.msg.ArmJointAnglesAction)
-        # _client.wait_for_server()
-        # _goal = kinova_msgs.msg.ArmJointAnglesGoal()
-        # _goal.angles.joint1 =  270.0
-        # _goal.angles.joint2 =  150.0
-        # _goal.angles.joint3 =  60.0
-        # _goal.angles.joint4 =  120.0
-        # _goal.angles.joint5 =  0.0
-        # _goal.angles.joint6 =  -90.0
-        # _goal.angles.joint7 =  0
-        # _client.send_goal(_goal)
-        # if _client.wait_for_result(rospy.Duration(20.0)):
-        #     _result = _client.get_result()
-        #     return
-        # else:
-        #     rospy.logerr('the joint angle action timed-out')
-        #     _client.cancel_all_goals()
-        #     return
-
 
     def shutdown(self):
         rospy.loginfo("Pollination State Machine node is shutdown")
